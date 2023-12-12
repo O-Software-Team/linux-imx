@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright 2023 Ocompany
+ */
+
+/dts-v1/;
+
+#include "oms8mq.dts"
+#include "oms8mq-dsi-rm69091.dtsi"
+
+&mipi0_dsi_host {
+	panel@0 {
+		compatible = "raydium,rm69091";
+	};
+};

@@ -201,8 +201,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mp-evk-revb4-rpmsg-lpv.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk.dtb imx8mq-evk-rpmsg.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk.dtb imx8mq-evk-rpmsg.dtb imx8mq-evk-pcie1-m2.dtb imx8mq-evk-usd-wifi.dtb \
 			  imx8mq-evk-usdhc2-m2.dtb
-dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk-ak4497.dtb imx8mq-evk-audio-tdm.dtb imx8mq-evk-pdm.dtb oms8mq-dsi-rm69091.dtb \
-			  oms8mq.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk-ak4497.dtb imx8mq-evk-audio-tdm.dtb imx8mq-evk-pdm.dtb imx8mq-oms-lcdif-rm69091.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk-root.dtb imx8mq-evk-inmate.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk-lcdif-rm67191.dtb imx8mq-evk-lcdif-adv7535.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk-lcdif-rm67199.dtb

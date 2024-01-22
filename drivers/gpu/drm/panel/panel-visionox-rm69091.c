@@ -18,7 +18,7 @@
 
 struct visionox_rm69091 {
 	struct drm_panel panel;
-	struct regulator_bulk_data supplies[2];
+//	struct regulator_bulk_data supplies[1];
 	struct gpio_desc *reset_gpio;
 	struct mipi_dsi_device *dsi;
 	bool prepared;
@@ -34,15 +34,17 @@ static int visionox_rm69091_power_on(struct visionox_rm69091 *ctx)
 {
 	int ret;
 
-	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
-	if (ret < 0)
-		return ret;
+//	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+//	if (ret < 0)
+//		return ret;
 
 	/*
 	 * Reset sequence of visionox panel requires the panel to be
 	 * out of reset for 10ms, followed by being held in reset
 	 * for 10ms and then out again
 	 */
+	//dev_err(ctx->panel.dev, "visionox_rm69091_power_on \n");
+
 	gpiod_set_value(ctx->reset_gpio, 1);
 	usleep_range(10000, 20000);
 	gpiod_set_value(ctx->reset_gpio, 0);
@@ -50,6 +52,7 @@ static int visionox_rm69091_power_on(struct visionox_rm69091 *ctx)
 	gpiod_set_value(ctx->reset_gpio, 1);
 	usleep_range(10000, 20000);
 
+	//dev_err(ctx->panel.dev, "visionox_rm69091_power_on finish\n");
 	return 0;
 }
 
@@ -57,7 +60,8 @@ static int visionox_rm69091_power_off(struct visionox_rm69091 *ctx)
 {
 	gpiod_set_value(ctx->reset_gpio, 0);
 
-	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	return (0);
+//	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 }
 
 static int visionox_rm69091_unprepare(struct drm_panel *panel)
@@ -66,6 +70,8 @@ static int visionox_rm69091_unprepare(struct drm_panel *panel)
 	int ret;
 
 	ctx->dsi->mode_flags = 0;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_unprepare\n");
 
 	ret = mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_SET_DISPLAY_OFF, NULL, 0);
 	if (ret < 0)
@@ -82,6 +88,7 @@ static int visionox_rm69091_unprepare(struct drm_panel *panel)
 	ret = visionox_rm69091_power_off(ctx);
 
 	ctx->prepared = false;
+	dev_err(ctx->panel.dev, "visionox_rm69091_unprepare finish\n");
 	return ret;
 }
 
@@ -89,6 +96,8 @@ static int visionox_rm69091_prepare(struct drm_panel *panel)
 {
 	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
 	int ret;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_prepare\n");
 
 	if (ctx->prepared)
 		return 0;
@@ -125,7 +134,7 @@ static int visionox_rm69091_prepare(struct drm_panel *panel)
 
 	ret = mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_EXIT_SLEEP_MODE, NULL, 0);
 	if (ret < 0) {
-		dev_err(ctx->panel.dev, "exit_sleep_mode cmd failed ret = %d\n", ret);
+	dev_err(ctx->panel.dev, "exit_sleep_mode cmd failed ret = %d\n", ret);
 		goto power_off;
 	}
 
@@ -142,14 +151,16 @@ static int visionox_rm69091_prepare(struct drm_panel *panel)
 	msleep(120);
 
 	ctx->prepared = true;
-
+   
+	dev_err(ctx->panel.dev, "visionox_rm69091_prepare finish\n");
 	return 0;
 
 power_off:
+	dev_err(ctx->panel.dev, "visionox_rm69091_prepare poweroff\n");
 	return ret;
 }
 
-static const struct drm_display_mode visionox_rm69091_1080x2248_60hz = {
+static const struct drm_display_mode visionox_rm69091_480x480_60hz = {
 	.name = "1080x2248",
 	.clock = 158695,
 	.hdisplay = 1080,
@@ -169,18 +180,20 @@ static int visionox_rm69091_get_modes(struct drm_panel *panel,
 	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
 	struct drm_display_mode *mode;
 
+	dev_err(ctx->panel.dev, "visionox_rm69091_get_modes\n");
 	mode = drm_mode_duplicate(connector->dev,
-				  &visionox_rm69091_1080x2248_60hz);
+				  &visionox_rm69091_480x480_60hz);
 	if (!mode) {
 		dev_err(ctx->panel.dev, "failed to create a new display mode\n");
 		return 0;
 	}
 
-	connector->display_info.width_mm = 74;
-	connector->display_info.height_mm = 131;
+	connector->display_info.width_mm = 30;
+	connector->display_info.height_mm = 40;
 	mode->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
 	drm_mode_probed_add(connector, mode);
 
+	dev_err(ctx->panel.dev, "visionox_rm69091_get_modes finish\n");
 	return 1;
 }
 
@@ -196,6 +209,8 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	struct visionox_rm69091 *ctx;
 	int ret;
 
+	dev_err(dev, "visionox_rm69091_probe\n");
+
 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
 	if (!ctx)
 		return -ENOMEM;
@@ -205,13 +220,14 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	ctx->panel.dev = dev;
 	ctx->dsi = dsi;
 
-	ctx->supplies[0].supply = "vdda";
-	ctx->supplies[1].supply = "vdd3p3";
+//	ctx->supplies[0].supply = "regulator-vsd-3v3";
 
-	ret = devm_regulator_bulk_get(ctx->panel.dev, ARRAY_SIZE(ctx->supplies),
-				      ctx->supplies);
-	if (ret < 0)
-		return ret;
+//	ret = devm_regulator_bulk_get(ctx->panel.dev, ARRAY_SIZE(ctx->supplies),
+//				      ctx->supplies);
+//	if (ret < 0) {
+//		dev_err(dev, "Can't get bulk regulator %s (%d)\n", ctx->supplies[0].supply, ret);
+//		return ret;
+//	}
 
 	ctx->reset_gpio = devm_gpiod_get(ctx->panel.dev,
 					 "reset", GPIOD_OUT_LOW);
@@ -236,18 +252,13 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 		goto err_dsi_attach;
 	}
 
-	ret = regulator_set_load(ctx->supplies[0].consumer, 32000);
-	if (ret) {
-		dev_err(dev, "regulator set load failed for vdda supply ret = %d\n", ret);
-		goto err_set_load;
-	}
+//	ret = regulator_set_load(ctx->supplies[0].consumer, 32000);
+//	if (ret) {
+//		dev_err(dev, "regulator set load failed for vdda supply ret = %d\n", ret);
+//		goto err_set_load;
+//	}
 
-	ret = regulator_set_load(ctx->supplies[1].consumer, 13200);
-	if (ret) {
-		dev_err(dev, "regulator set load failed for vdd3p3 supply ret = %d\n", ret);
-		goto err_set_load;
-	}
-
+	dev_err(dev, "visionox_rm69091_probe finish\n");
 	return 0;
 
 err_set_load:
@@ -261,6 +272,7 @@ static void visionox_rm69091_remove(struct mipi_dsi_device *dsi)
 {
 	struct visionox_rm69091 *ctx = mipi_dsi_get_drvdata(dsi);
 
+	dev_err(ctx->panel.dev, "visionox_rm69091_remove\n");
 	mipi_dsi_detach(ctx->dsi);
 	mipi_dsi_device_unregister(ctx->dsi);
 
@@ -268,7 +280,7 @@ static void visionox_rm69091_remove(struct mipi_dsi_device *dsi)
 }
 
 static const struct of_device_id visionox_rm69091_of_match[] = {
-	{ .compatible = "visionox,rm69091-402x476-display", },
+	{ .compatible = "raydium,rm69091" },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, visionox_rm69091_of_match);

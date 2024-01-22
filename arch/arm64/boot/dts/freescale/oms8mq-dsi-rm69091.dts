@@ -1,15 +1,71 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
- * Copyright 2023 Ocompany
+ * Copyright 2023-2024 Ocompany
  */
 
-/dts-v1/;
+#include "imx8mq-evk.dts"
+#include "imx8mq-pinfunc.h"
 
-#include "oms8mq.dts"
-#include "oms8mq-dsi-rm69091.dtsi"
+&irqsteer {
+	status = "okay";
+};
 
-&mipi0_dsi_host {
+&dcss {
+	status = "disabled";
+};
+
+&lcdif {
+	status = "okay";
+};
+
+&mipi_dsi {
+	status = "okay";
+
 	panel@0 {
-		compatible = "raydium,rm69091";
+		pinctrl-0 = <&pinctrl_mipi_dsi_en>;
+		pinctrl-names = "default";
+		compatible = "visionox,rm69091";
+		reg = <0>;
+		reset-gpios = <&gpio1 21 GPIO_ACTIVE_LOW>;
+		dsi-lanes = <1>;
+		video-mode = <2>;	/* 0: burst mode
+					 * 1: non-burst mode with sync event
+					 * 2: non-burst mode with sync pulse
+					 * 3: command mode
+					 */
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&mipi_dsi_out>;
+			};
+		};
 	};
+
+	ports {
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@1 {
+			mipi_dsi_out: endpoint {
+				reg = <1>;
+				remote-endpoint = <&panel_in>;
+			};
+		};
+	};
+};
+
+&dphy {
+	status = "okay";
+};
+
+&iomuxc {
+	pinctrl_mipi_dsi_en: mipi_dsi_en {
+		fsl,pins = <
+			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8	0x16
+		>;
+	};
+};
+
+&synaptics_dsx_ts {
+	status = "okay";
 };

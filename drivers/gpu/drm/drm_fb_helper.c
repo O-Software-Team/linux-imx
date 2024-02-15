@@ -1743,7 +1743,8 @@ static int drm_fb_helper_single_fb_probe(struct drm_fb_helper *fb_helper,
 	mutex_unlock(&client->modeset_mutex);
 
 	if (crtc_count == 0 || sizes.fb_width == -1 || sizes.fb_height == -1) {
-		drm_info(dev, "Cannot find any crtc or sizes\n");
+		drm_info(dev, "Cannot find any crtc [%d] or sizes x=[%d]y=[%d]\n",
+			crtc_count, sizes.fb_width, sizes.fb_height);
 
 		/* First time: disable all crtc's.. */
 		if (!fb_helper->deferred_setup)
@@ -1751,6 +1752,8 @@ static int drm_fb_helper_single_fb_probe(struct drm_fb_helper *fb_helper,
 		return -EAGAIN;
 	}
 
+	drm_info(dev, "Found this crtc [%d] with sizes x=[%d]y=[%d]\n",
+			crtc_count, sizes.fb_width, sizes.fb_height);
 	/* Handle our overallocation */
 	sizes.surface_height *= drm_fbdev_overalloc;
 	sizes.surface_height /= 100;

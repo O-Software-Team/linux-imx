@@ -20,9 +20,11 @@ struct visionox_rm69091 {
 	struct drm_panel panel;
 //	struct regulator_bulk_data supplies[1];
 	struct gpio_desc *reset_gpio;
+	struct gpio_desc *elvddss_gpio;
 	struct mipi_dsi_device *dsi;
 	bool prepared;
 	bool enabled;
+	bool probed;
 };
 
 static inline struct visionox_rm69091 *panel_to_ctx(struct drm_panel *panel)
@@ -43,25 +45,63 @@ static int visionox_rm69091_power_on(struct visionox_rm69091 *ctx)
 	 * out of reset for 10ms, followed by being held in reset
 	 * for 10ms and then out again
 	 */
-	//dev_err(ctx->panel.dev, "visionox_rm69091_power_on \n");
 
-	gpiod_set_value(ctx->reset_gpio, 1);
-	usleep_range(10000, 20000);
+	gpiod_set_value(ctx->elvddss_gpio, 1);
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on \n");
+
 	gpiod_set_value(ctx->reset_gpio, 0);
-	usleep_range(10000, 20000);
+	msleep(120);
+	//usleep_range(10000, 20000);
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET HIGH\n"); /* Asserted means set LOW */
 	gpiod_set_value(ctx->reset_gpio, 1);
-	usleep_range(10000, 20000);
+	msleep(120);
+	//usleep_range(10000, 20000);
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET LOW\n");
+	gpiod_set_value(ctx->reset_gpio, 0);
+	msleep(120);
+	//usleep_range(10000, 20000);
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET HIGH\n");
 
-	//dev_err(ctx->panel.dev, "visionox_rm69091_power_on finish\n");
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on finish\n");
 	return 0;
 }
 
 static int visionox_rm69091_power_off(struct visionox_rm69091 *ctx)
 {
 	gpiod_set_value(ctx->reset_gpio, 0);
+	gpiod_set_value(ctx->elvddss_gpio, 0);
 
 	return (0);
 //	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+}
+static int visionox_rm69091_enable(struct drm_panel *panel)
+{
+	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
+	int ret;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_enable\n");
+
+	if (ctx->enabled)
+		return 0;
+
+	ctx->enabled = true;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_enable finish\n");
+	return 0;
+}
+
+static int visionox_rm69091_disable(struct drm_panel *panel)
+{
+	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
+	int ret;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_disable\n");
+
+	ctx->enabled = false;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_disable finish\n");
+	return 0;
 }
 
 static int visionox_rm69091_unprepare(struct drm_panel *panel)
@@ -106,29 +146,49 @@ static int visionox_rm69091_prepare(struct drm_panel *panel)
 	if (ret < 0)
 		return ret;
 
+	dev_err(ctx->panel.dev, "visionox_rm69091 POWER_ON in prepare\n");
+
 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 
-	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0xfe, 0x00 }, 2);
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x29, 0xfe, 0x00 }, 3);
 	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx 0 failed, ret = %d\n", ret);
+		dev_err(ctx->panel.dev, "cmd set tx step 1 failed, ret = %d\n", ret);
 		goto power_off;
 	}
 
-	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0xc2, 0x08 }, 2);
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x39, 0x31, 0x00, 0x28, 0x01, 0xb9 }, 6);
 	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx 1 failed, ret = %d\n", ret);
+		dev_err(ctx->panel.dev, "cmd set tx step 2 failed, ret = %d\n", ret);
 		goto power_off;
 	}
 
-	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x35, 0x00 }, 2);
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x39, 0x30, 0x00, 0x01, 0x01, 0xda }, 6);
 	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx 2 failed, ret = %d\n", ret);
+		dev_err(ctx->panel.dev, "cmd set tx step 3 failed, ret = %d\n", ret);
 		goto power_off;
 	}
 
-	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x51, 0xff }, 2);
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x29, 0x12, 0x00 }, 3);
 	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx 3 failed, ret = %d\n", ret);
+		dev_err(ctx->panel.dev, "cmd set tx step 4 failed, ret = %d\n", ret);
+		goto power_off;
+	}
+
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x39, 0x2a, 0x00, 0x28, 0x01, 0xb9 }, 6);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 5 failed, ret = %d\n", ret);
+		goto power_off;
+	}
+
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x39, 0x2b, 0x00, 0x00, 0x01, 0xdb }, 6);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 6 failed, ret = %d\n", ret);
+		goto power_off;
+	}
+
+	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x29, 0x35, 0x00 }, 3);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 7 failed, ret = %d\n", ret);
 		goto power_off;
 	}
 
@@ -160,17 +220,18 @@ power_off:
 	return ret;
 }
 
-static const struct drm_display_mode visionox_rm69091_480x480_60hz = {
-	.name = "1080x2248",
-	.clock = 158695,
-	.hdisplay = 1080,
-	.hsync_start = 1080 + 26,
-	.hsync_end = 1080 + 26 + 2,
-	.htotal = 1080 + 26 + 2 + 36,
-	.vdisplay = 2248,
-	.vsync_start = 2248 + 56,
-	.vsync_end = 2248 + 56 + 4,
-	.vtotal = 2248 + 56 + 4 + 4,
+static const struct drm_display_mode visionox_rm69091_402x476_60hz = {
+	.name = "402x476",
+	.clock = 12780,
+	//.clock = (402 + 10 + 2 + 12) * (476 + 10 + 2 + 12) * 60 / 1000
+	.hdisplay = 402,
+	.hsync_start = 402 + 10,
+	.hsync_end = 402 + 10 + 2,
+	.htotal = 402 + 10 + 2 + 12,
+	.vdisplay = 476,
+	.vsync_start = 476 + 10,
+	.vsync_end = 476 + 10 + 2,
+	.vtotal = 476 + 10 + 2 + 12,
 	.flags = 0,
 };
 
@@ -182,7 +243,7 @@ static int visionox_rm69091_get_modes(struct drm_panel *panel,
 
 	dev_err(ctx->panel.dev, "visionox_rm69091_get_modes\n");
 	mode = drm_mode_duplicate(connector->dev,
-				  &visionox_rm69091_480x480_60hz);
+			  &visionox_rm69091_402x476_60hz);
 	if (!mode) {
 		dev_err(ctx->panel.dev, "failed to create a new display mode\n");
 		return 0;
@@ -198,6 +259,8 @@ static int visionox_rm69091_get_modes(struct drm_panel *panel,
 }
 
 static const struct drm_panel_funcs visionox_rm69091_drm_funcs = {
+	.enable = visionox_rm69091_enable,
+	.disable = visionox_rm69091_disable,
 	.unprepare = visionox_rm69091_unprepare,
 	.prepare = visionox_rm69091_prepare,
 	.get_modes = visionox_rm69091_get_modes,
@@ -209,7 +272,7 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	struct visionox_rm69091 *ctx;
 	int ret;
 
-	dev_err(dev, "visionox_rm69091_probe\n");
+	dev_err(dev, "visionox_rm69091_probe [device = %s]\n", dsi->name);
 
 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
 	if (!ctx)
@@ -235,6 +298,12 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 		dev_err(dev, "cannot get reset gpio %ld\n", PTR_ERR(ctx->reset_gpio));
 		return PTR_ERR(ctx->reset_gpio);
 	}
+	ctx->elvddss_gpio = devm_gpiod_get(ctx->panel.dev,
+					 "elvddss", GPIOD_OUT_HIGH);
+	if (IS_ERR(ctx->elvddss_gpio)) {
+		dev_err(dev, "cannot get reset gpio %ld\n", PTR_ERR(ctx->elvddss_gpio));
+		return PTR_ERR(ctx->elvddss_gpio);
+	}
 
 	drm_panel_init(&ctx->panel, dev, &visionox_rm69091_drm_funcs,
 		       DRM_MODE_CONNECTOR_DSI);
@@ -242,7 +311,7 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	ctx->panel.funcs = &visionox_rm69091_drm_funcs;
 	drm_panel_add(&ctx->panel);
 
-	dsi->lanes = 4;
+	dsi->lanes = 1;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_LPM |
 			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
@@ -258,12 +327,28 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 //		goto err_set_load;
 //	}
 
+	gpiod_set_value(ctx->elvddss_gpio, 1);
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on \n");
+
+	gpiod_set_value(ctx->reset_gpio, 0);
+	usleep_range(10000, 20000);
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET HIGH\n");
+	gpiod_set_value(ctx->reset_gpio, 1);
+	usleep_range(10000, 20000);
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET LOW\n"); /* Asserting here to active low */
+	gpiod_set_value(ctx->reset_gpio, 0);
+	usleep_range(10000, 20000);
+	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET HIGH\n");
+
 	dev_err(dev, "visionox_rm69091_probe finish\n");
 	return 0;
 
 err_set_load:
+	dev_err(dev, "visionox_rm69091_probe err_set_load\n");
 	mipi_dsi_detach(dsi);
 err_dsi_attach:
+	dev_err(dev, "visionox_rm69091_probe err_dsi_attach\n");
 	drm_panel_remove(&ctx->panel);
 	return ret;
 }

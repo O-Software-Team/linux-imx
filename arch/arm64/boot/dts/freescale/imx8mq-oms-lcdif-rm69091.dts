@@ -1,36 +1,55 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright 2020 NXP.
+ * Copyright 2024 Ocompany.
  */
 
-#include "imx8mq-evk-lcdif-rm67191.dts"
+#include "imx8mq-evk.dts"
 
-/delete-node/ &synaptics_dsx_ts;
-&iomuxc {
-	sc_reset_active: scrnrstgrp {
-		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD1_GPIO1_IO20	0x59 /* Active LOW */
-		>;
-	};
-	ts_reset_active: tsrstgrp {
-		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD0_GPIO1_IO21	0x19 /* Active HIGH */
-		>;
-	};
-	ts_int_active: tsintgrp {
-		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD2_GPIO1_IO19	0x19
-		>;
-	};
+&lcdif {
+	status = "okay";
 };
+
 &mipi_dsi {
+        #address-cells = <1>;
+        #size-cells = <0>;
+        status = "okay";
 	panel@0 {
 		compatible = "raydium,rm69091";
-		pinctrl-0 = <&sc_reset_active>;
+		reg = <0>;
+		pinctrl-0 = <&sc_elvddss_active>, <&sc_reset_active>;
+		pinctrl-names = "default";
+		elvddss-gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
 		dsi-lanes = <1>;
 		width-mm = <30>;
 		height-mm = <40>;
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&mipi_dsi_out>;
+			};
+		};
+	};
+
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+			mipi_dsi_lcdif_in: endpoint@0 {
+				reg = <0>;
+				remote-endpoint = <&lcdif_mipi_dsi>;
+			};
+		};
+
+		port@1 {
+			reg = <1>;
+			mipi_dsi_out: endpoint {
+				remote-endpoint = <&panel_in>;
+			};
+		};
 	};
 };
 
@@ -39,10 +58,11 @@
 	tsc@24 {
 		compatible = "parade,pt_i2c_adapter";
 		reg = <0x24>;
-		interrupts = <19 0x4>;
-		reset-gpios = <&gpio1 21 GPIO_ACTIVE_HIGH>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <19 0x2>;
 		parade,adapter_id = "pt_i2c_adapter";
 		pinctrl-0 = <&ts_int_active>, <&ts_reset_active>;
+		pinctrl-names = "default";
 
 		parade,core {
 			parade,name = "pt_core";
@@ -154,5 +174,32 @@
 					<0x19 0 1 0 0>;
 			};
 		};
+	};
+};
+
+&dphy {
+	status = "okay";
+};
+
+&iomuxc {
+	sc_elvddss_active: scrngrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8	0xd6 /* Active HIGH */
+		>;
+	};
+	sc_reset_active: scrngrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_ENET_TD1_GPIO1_IO20	0x16 /* Active LOW */
+		>;
+	};
+	ts_reset_active: tsgrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_ENET_TD0_GPIO1_IO21	0x0b /* Active HIGH */
+		>;
+	};
+	ts_int_active: tsgrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_ENET_TD2_GPIO1_IO19	0x5f
+		>;
 	};
 };

@@ -191,10 +191,10 @@ int pt_xres(struct pt_core_platform_data *pdata,
 	int rst_gpio = pdata->rst_gpio;
 	int rc = 0;
 	int ddi_rst_gpio = pdata->ddi_rst_gpio;
-
+#if 0 /* DAF */
 	pt_debug(dev, DL_WARN, "%s: 20ms HARD RESET on gpio=%d\n",
 		__func__, pdata->rst_gpio);
-
+#endif /* DAF */
 	/* Toggling only TP_XRES as DDI_XRES resets the entire part */
 	gpio_set_value(rst_gpio, 1);
 	if (ddi_rst_gpio)

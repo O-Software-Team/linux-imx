@@ -686,7 +686,6 @@ skip_other_field:
 	if (rc)
 		pt_debug(cd->dev, DL_ERROR,
 			"%s: Fail pt_adap_transfer\n", __func__);
-
 	kfree(cmd);
 	return rc;
 }
@@ -2554,10 +2553,11 @@ static int pt_write_to_hid_output_reg_(struct pt_core_data *cd,
 	pt_pr_buf(cd->dev, DL_DEBUG, cmd, length + 2, ">>> CMD");
 	rc = pt_adap_write_read_specific(cd, length + 2, cmd, NULL, 0);
 
+#if 0 /* DAF */
 	if (rc)
 		pt_debug(cd->dev, DL_ERROR,
 			"%s: Fail pt_adap_transfer rc=%d\n", __func__, rc);
-
+#endif /* DAF */
 	if (cmd_allocated)
 		kfree(cmd);
 	return rc;
@@ -2907,7 +2907,6 @@ static int pt_write_to_pip2_cmd_reg_(struct pt_core_data *cd,
 	if (rc)
 		pt_debug(cd->dev, DL_ERROR,
 			"%s: Fail pt_adap_transfer\n", __func__);
-
 	kfree(write_buf);
 	return rc;
 }
@@ -9339,8 +9338,10 @@ static int pt_hw_hard_reset(struct pt_core_data *cd)
 		pt_debug(cd->dev, DL_DEBUG, "%s: Startup Status Reset\n",
 			__func__);
 		cd->cpdata->xres(cd->cpdata, cd->dev);
+#if 0 /* DAF */
 		pt_debug(cd->dev, DL_WARN, "%s: executed HARD reset\n",
 			__func__);
+#endif /* DAF */
 		return 0;
 	}
 	pt_debug(cd->dev, DL_ERROR,
@@ -9440,8 +9441,10 @@ static int pt_dut_reset_and_wait(struct pt_core_data *cd)
 		cd->bus_transmit_error_count++;
 		pt_toggle_err_gpio(cd, PT_ERR_GPIO_I2C_TRANS);
 #endif /* TTDL_DIAGNOSTICS */
+#if 0 /* DAF */
 		pt_debug(cd->dev, DL_ERROR, "%s: reset timed out\n",
 			__func__);
+#endif /* DAF */
 		rc = -ETIME;
 		goto exit;
 	}
@@ -18033,10 +18036,11 @@ queue_startup:
 		cd->watchdog_failed_access_count++;
 		pt_toggle_err_gpio(cd, PT_ERR_GPIO_EXCLUSIVE_ACCESS);
 #endif /* TTDL_DIAGNOSTICS */
+#if 0 /* DAF */
 		pt_debug(cd->dev, DL_ERROR,
 			"%s: failed to access device in WD, retry count=%d\n",
 			__func__, cd->startup_retry_count);
-
+#endif /* DAF */
 		/* Already tried FW upgrade because of watchdog but failed */
 		if (cd->startup_retry_count > PT_WATCHDOG_RETRY_COUNT)
 			return;
@@ -18071,9 +18075,11 @@ queue_startup:
 			}
 #ifdef TTDL_DIAGNOSTICS
 			cd->wd_xres_count++;
+#if 0 /* DAF */
 			pt_debug(cd->dev, DL_WARN,
 				"%s: Comm Failed - DUT reset [#%d]\n",
 				__func__, cd->wd_xres_count);
+#endif /* DAF */
 #endif /* TTDL_DIAGNOSTICS */
 		} else {
 			/*

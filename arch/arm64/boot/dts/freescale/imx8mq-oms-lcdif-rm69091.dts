@@ -54,19 +54,19 @@
 };
 
 &i2c3 {
-	status = "ok";
+	status = "okay";
 	tsc@24 {
 		compatible = "parade,pt_i2c_adapter";
 		reg = <0x24>;
 		interrupt-parent = <&gpio1>;
 		interrupts = <19 0x2>;
 		parade,adapter_id = "pt_i2c_adapter";
-		pinctrl-0 = <&ts_int_active>, <&ts_reset_active>;
-		pinctrl-names = "default";
 
 		parade,core {
 			parade,name = "pt_core";
 
+			pinctrl-0 = <&ts_int_active>, <&ts_reset_active>;
+			pinctrl-names = "default";
 			parade,irq_gpio = <19>;
 			parade,rst_gpio = <21>;
 			parade,hid_desc_register = <1>;
@@ -79,11 +79,11 @@
 			 * PT_CORE_FLAG_SKIP_RUNTIME = 0x20
 			 * PT_CORE_FLAG_SKIP_RESUME = 0x40
 			 */
-			parade,flags = <4>;
+			parade,flags = <0>;
 			/* PT_CORE_EWG_NONE */
 			parade,easy_wakeup_gesture = <0>;
 			/* 0:AUTO 1:PIP1_ONLY 2:PIP2_CAPABLE*/
-			parade,config_dut_generation = <2>;
+			parade,config_dut_generation = <1>;
 			/* 0:False 1:True*/
 			parade,watchdog_force_stop = <0>;
 			/* 
@@ -184,17 +184,17 @@
 &iomuxc {
 	sc_elvddss_active: scrngrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8	0xd6 /* Active HIGH */
+			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8	0xd6  /* Active HIGH */
 		>;
 	};
 	sc_reset_active: scrngrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD1_GPIO1_IO20	0x16 /* Active LOW */
+			MX8MQ_IOMUXC_ENET_TD1_GPIO1_IO20	0x16  /* Active LOW */
 		>;
 	};
 	ts_reset_active: tsgrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD0_GPIO1_IO21	0x0b /* Active HIGH */
+			MX8MQ_IOMUXC_ENET_TD0_GPIO1_IO21	0x16  /* Active LOW */
 		>;
 	};
 	ts_int_active: tsgrp {

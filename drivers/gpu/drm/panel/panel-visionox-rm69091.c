@@ -18,7 +18,7 @@
 
 struct visionox_rm69091 {
 	struct drm_panel panel;
-//	struct regulator_bulk_data supplies[1];
+	struct regulator_bulk_data supplies[1];
 	struct gpio_desc *reset_gpio;
 	struct gpio_desc *elvddss_gpio;
 	struct mipi_dsi_device *dsi;
@@ -36,9 +36,9 @@ static int visionox_rm69091_power_on(struct visionox_rm69091 *ctx)
 {
 	int ret;
 
-//	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
-//	if (ret < 0)
-//		return ret;
+	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	if (ret < 0)
+		return ret;
 
 	/*
 	 * Reset sequence of visionox panel requires the panel to be
@@ -72,8 +72,7 @@ static int visionox_rm69091_power_off(struct visionox_rm69091 *ctx)
 	gpiod_set_value(ctx->reset_gpio, 0);
 	gpiod_set_value(ctx->elvddss_gpio, 0);
 
-	return (0);
-//	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 }
 static int visionox_rm69091_enable(struct drm_panel *panel)
 {
@@ -283,14 +282,14 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	ctx->panel.dev = dev;
 	ctx->dsi = dsi;
 
-//	ctx->supplies[0].supply = "regulator-vsd-3v3";
+	ctx->supplies[0].supply = "buck6";
 
-//	ret = devm_regulator_bulk_get(ctx->panel.dev, ARRAY_SIZE(ctx->supplies),
-//				      ctx->supplies);
-//	if (ret < 0) {
-//		dev_err(dev, "Can't get bulk regulator %s (%d)\n", ctx->supplies[0].supply, ret);
-//		return ret;
-//	}
+	ret = devm_regulator_bulk_get(ctx->panel.dev, ARRAY_SIZE(ctx->supplies),
+				      ctx->supplies);
+	if (ret < 0) {
+		dev_err(dev, "Can't get bulk regulator %s (%d)\n", ctx->supplies[0].supply, ret);
+		return ret;
+	}
 
 	ctx->reset_gpio = devm_gpiod_get(ctx->panel.dev,
 					 "reset", GPIOD_OUT_LOW);
@@ -321,25 +320,11 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 		goto err_dsi_attach;
 	}
 
-//	ret = regulator_set_load(ctx->supplies[0].consumer, 32000);
-//	if (ret) {
-//		dev_err(dev, "regulator set load failed for vdda supply ret = %d\n", ret);
-//		goto err_set_load;
-//	}
-
-	gpiod_set_value(ctx->elvddss_gpio, 1);
-
-	dev_err(ctx->panel.dev, "visionox_rm69091_power_on \n");
-
-	gpiod_set_value(ctx->reset_gpio, 0);
-	usleep_range(10000, 20000);
-	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET HIGH\n");
-	gpiod_set_value(ctx->reset_gpio, 1);
-	usleep_range(10000, 20000);
-	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET LOW\n"); /* Asserting here to active low */
-	gpiod_set_value(ctx->reset_gpio, 0);
-	usleep_range(10000, 20000);
-	dev_err(ctx->panel.dev, "visionox_rm69091_power_on RESET HIGH\n");
+	ret = regulator_set_load(ctx->supplies[0].consumer, 55000);
+	if (ret) {
+		dev_err(dev, "regulator set load failed for buck6 3V3 supply ret = %d\n", ret);
+		goto err_set_load;
+	}
 
 	dev_err(dev, "visionox_rm69091_probe finish\n");
 	return 0;

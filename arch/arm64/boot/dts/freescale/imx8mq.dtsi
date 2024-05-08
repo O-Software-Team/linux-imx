@@ -472,6 +472,20 @@
 				gpio-ranges = <&iomuxc 0 119 30>;
 			};
 
+                        pcie_phy: pcie-phy@30250000 {
+                                compatible = "fsl,imx8mq-pcie-phy";
+                                reg = <0x30250000 0x10000>;
+                                clocks = <&clk IMX8MQ_CLK_PCIE1_PHY>;
+                                clock-names = "ref";
+                                assigned-clocks = <&clk IMX8MQ_CLK_PCIE1_PHY>;
+                                assigned-clock-rates = <100000000>;
+                                assigned-clock-parents = <&clk IMX8MQ_SYS2_PLL_100M>;
+                                resets = <&src IMX8MQ_RESET_PCIEPHY>;
+                                reset-names = "pciephy";
+                                #phy-cells = <0>;
+                                status = "okay";
+                        };
+
 			tmu: tmu@30260000 {
 				compatible = "fsl,imx8mq-tmu";
 				reg = <0x30260000 0x10000>;

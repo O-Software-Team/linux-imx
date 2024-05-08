@@ -342,7 +342,97 @@
 	status = "okay";
 };
 
+&pcie0 {
+        /delete-property/ vph-supply;
+
+        mwifiex: wifi@0 {
+		compatible = "mediatek,88w9098", "pci11ab,2b42", "pci1b4b,2b42";
+	};
+};
+
+&gpio5 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pcie1_wake>;
+        pcie1_wake-on-hog {
+                gpio-hog;
+                gpios = <21 GPIO_ACTIVE_LOW>;
+                output-high;
+        };
+};
+
+&gpio3 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&wifi_reset>, <&bt_reset>, <&wifi_perst>, <&wifi_disable>, <&bt_wakeup>, <&wifi_pd>;
+
+        wifi-reset-on-hog {
+                gpio-hog;
+                gpios = <07 GPIO_ACTIVE_LOW>;
+                output-high;
+        };
+        bt-reset-on-hog {
+                gpio-hog;
+                gpios = <06 GPIO_ACTIVE_LOW>;
+                output-high;
+        };
+        wifi-perst-on-hog {
+                gpio-hog;
+                gpios = <05 GPIO_ACTIVE_LOW>;
+                output-high;
+        };
+        wifi-disable-on-hog {
+                gpio-hog;
+                gpios = <04 GPIO_ACTIVE_LOW>;
+                output-high;
+        };
+        bt-wakeup-on-hog {
+                gpio-hog;
+                gpios = <02 GPIO_ACTIVE_HIGH>;
+                output-high;
+        };
+        wifi-pd-on-hog {
+                gpio-hog;
+                gpios = <00 GPIO_ACTIVE_LOW>;
+                output-high;
+        };
+};
+
 &iomuxc {
+	pcie1_wake: pcie1grp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_I2C4_SDA_GPIO5_IO21	0x16  /* pcie1 wake Active LOW */
+		>;
+	};
+
+	wifi_reset: wifigrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_NAND_DATA01_GPIO3_IO7	0x16  /* wifi reset Active LOW */
+		>;
+	};
+	bt_reset: btgrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_NAND_DATA00_GPIO3_IO6	0x16  /* bt reset Active LOW */
+		>;
+	};
+	wifi_perst: wifigrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_NAND_CLE_GPIO3_IO5		0x16  /* wifi perst Active LOW */
+		>;
+	};
+	wifi_disable: wifigrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_NAND_CE3_B_GPIO3_IO4	0x16  /* wifi disable Active LOW */
+		>;
+	};
+	bt_wakeup: btgrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_NAND_CE1_B_GPIO3_IO2	0xd6  /* bt wakeup Active HIGH */
+		>;
+	};
+	wifi_pd: wifigrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_NAND_ALE_GPIO3_IO0		0x16  /* wifi pd Active LOW */
+		>;
+	};
 	pinctrl_pmic: pmicgrp {
 		fsl,pins = <
 			MX8MQ_IOMUXC_GPIO1_IO07_GPIO1_IO7	0x80  /* PMIC intr Active LOW */

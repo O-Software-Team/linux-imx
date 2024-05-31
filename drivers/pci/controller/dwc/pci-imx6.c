@@ -46,6 +46,9 @@
 
 #define to_imx6_pcie(x)	dev_get_drvdata((x)->dev)
 
+#define TRACE_ME(fmt, ...) \
+    printk(KERN_NOTICE "%s:%d %s(): " fmt, __FILE__, __LINE__, __FUNCTION__, __VAR_ARGS__)
+
 enum imx6_pcie_variants {
 	IMX6Q,
 	IMX6Q_EP,
@@ -999,12 +1002,14 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 	u32 tmp;
 	int ret;
 
+    TRACE_ME("pci=0x%x", pci);
 	/*
 	 * Force Gen1 operation when starting the link.  In case the link is
 	 * started in Gen2 mode, there is a possibility the devices on the
 	 * bus will not be detected at all.  This happens with PCIe switches.
 	 */
 	if (!imx6_pcie_cz_enabled) {
+        TRACE_ME("");
 		dw_pcie_dbi_ro_wr_en(pci);
 		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
 		tmp &= ~PCI_EXP_LNKCAP_SLS;
@@ -1017,8 +1022,11 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 	imx6_pcie_ltssm_enable(dev);
 
 	ret = dw_pcie_wait_for_link(pci);
-	if (ret)
-		goto err_reset_phy;
+	if (ret) {
+        TRACE_ME("dw_pcie_wait_for_link returned %d", ret);
+        goto err_reset_phy;
+    }
+    TRACE_ME("");
 
 	if (pci->link_gen > 1) {
 		/* Allow faster modes after the link is up */
@@ -1057,8 +1065,10 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 
 		/* Make sure link training is finished as well! */
 		ret = dw_pcie_wait_for_link(pci);
-		if (ret)
-			goto err_reset_phy;
+		if (ret) {
+            TRACE_ME("dw_pcie_wait_for_link returned %d", ret);
+            goto err_reset_phy;
+        }
 	} else {
 		dev_info(dev, "Link: Only Gen1 is enabled\n");
 	}
@@ -1509,6 +1519,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 	struct device_node *node = dev->of_node;
 	int ret;
 
+    TRACE_ME("");
 	imx6_pcie = devm_kzalloc(dev, sizeof(*imx6_pcie), GFP_KERNEL);
 	if (!imx6_pcie)
 		return -ENOMEM;
@@ -1526,6 +1537,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 
 	/* Find the PHY if one is defined, only imx7d uses it */
 	np = of_parse_phandle(node, "fsl,imx7d-pcie-phy", 0);
+    TRACE_ME("ev=0x%x, np=0x%x", dev, np);
 	if (np) {
 		struct resource res;
 
@@ -1541,18 +1553,24 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 
 	dbi_base = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	pci->dbi_base = devm_ioremap_resource(dev, dbi_base);
-	if (IS_ERR(pci->dbi_base))
+	if (IS_ERR(pci->dbi_base)) {
+        TRACE_ME("could not remap the Phy resource");
 		return PTR_ERR(pci->dbi_base);
+    }
 
 	if (of_property_read_u32(node, "hsio-cfg", &imx6_pcie->hsio_cfg))
 		imx6_pcie->hsio_cfg = 0;
+    TRACE_ME("imx6_pcie->hsio_cfg=0x%x",imx6_pcie->hsio_cfg);
 	if (of_property_read_u32(node, "local-addr", &imx6_pcie->local_addr))
 		imx6_pcie->local_addr = 0;
+    TRACE_ME("imx6_pcie->local_addr=0x%x",imx6_pcie->local_addr);
 
 	/* Fetch GPIOs */
 	imx6_pcie->reset_gpio = of_get_named_gpio(node, "reset-gpio", 0);
+    TRACE_ME("imx6_pcie->reset_gpio=0x%x", imx6_pcie->reset_gpio);
 	imx6_pcie->gpio_active_high = of_property_read_bool(node,
 						"reset-gpio-active-high");
+    TRACE_ME("imx6_pcie->gpio_active_high=0x%x", imx6_pcie->gpio_active_high);
 	if (gpio_is_valid(imx6_pcie->reset_gpio)) {
 		ret = devm_gpio_request_one(dev, imx6_pcie->reset_gpio,
 				imx6_pcie->gpio_active_high ?
@@ -1564,6 +1582,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 			return ret;
 		}
 	} else if (imx6_pcie->reset_gpio == -EPROBE_DEFER) {
+        TRACE_ME("imx6_pcie->reset_gpio = -EPROBE_DEFER")
 		return imx6_pcie->reset_gpio;
 	}
 
@@ -1589,6 +1608,8 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 					     "pcie_inbound_axi clock missing or invalid\n");
 		break;
 	case IMX8MQ:
+        TRACE_ME("imx6_pcie->drvdata->variant is IMX8MQ");
+        fallthrough;
 	case IMX8MQ_EP:
 		imx6_pcie->pcie_aux = devm_clk_get(dev, "pcie_aux");
 		if (IS_ERR(imx6_pcie->pcie_aux))
@@ -1734,17 +1755,23 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, imx6_pcie);
 
 	ret = imx6_pcie_attach_pd(dev);
-	if (ret)
-		return ret;
+	if (ret) {
+        TRACE_ME("");
+        return ret;
+    }
 
 	if (imx6_pcie->drvdata->mode == DW_PCIE_EP_TYPE) {
 		ret = imx6_add_pcie_ep(imx6_pcie, pdev);
-		if (ret < 0)
-			return ret;
+		if (ret < 0) {
+            TRACE_ME("");
+            return ret;
+        }
 	} else {
 		ret = dw_pcie_host_init(&pci->pp);
-		if (ret < 0)
-			return ret;
+		if (ret < 0) {
+            TRACE_ME("");
+            return ret;
+        }
 	}
 
 	pci_imx_set_msi_en(&pci->pp);
@@ -1935,8 +1962,10 @@ static int __init imx6_pcie_init(void)
 	struct device_node *np;
 
 	np = of_find_matching_node(NULL, imx6_pcie_of_match);
-	if (!np)
+	if (!np) {
+        TRACE_ME("of_find_matching_node did not find node, returning -ENODEV");
 		return -ENODEV;
+    }
 	of_node_put(np);
 
 	/*
@@ -1950,6 +1979,7 @@ static int __init imx6_pcie_init(void)
 			"external abort on non-linefetch");
 #endif
 
+    TRACE_ME("pltaform_driver_register(imx6_pcie_driver)");
 	return platform_driver_register(&imx6_pcie_driver);
 }
 device_initcall(imx6_pcie_init);

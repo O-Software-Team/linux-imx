@@ -23,6 +23,9 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
+#define TRACE_ME(fmt, ...) \
+    printk(KERN_NOTICE "%s:%d %s(): " fmt, __FILE__, __LINE__, __FUNCTION__, __VAR_ARGS__)
+
 static const char * const dw_pcie_app_clks[DW_PCIE_NUM_APP_CLKS] = {
 	[DW_PCIE_DBI_CLK] = "dbi",
 	[DW_PCIE_MSTR_CLK] = "mstr",
@@ -650,15 +653,18 @@ int dw_pcie_wait_for_link(struct dw_pcie *pci)
 	int retries;
 
 	/* Check if the link is up or not */
+    TRACE_ME("pci=0x$x", pci);
 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
 		if (dw_pcie_link_up(pci))
 			break;
 
+        TRACE_ME("usleep_range()");
 		usleep_range(LINK_WAIT_USLEEP_MIN, LINK_WAIT_USLEEP_MAX);
 	}
 
 	if (retries >= LINK_WAIT_MAX_RETRIES) {
 		dev_err(pci->dev, "Phy link never came up\n");
+        TRACE_ME("returning -ETIMEDOUT");
 		return -ETIMEDOUT;
 	}
 
@@ -677,8 +683,10 @@ int dw_pcie_link_up(struct dw_pcie *pci)
 {
 	u32 val;
 
-	if (pci->ops && pci->ops->link_up)
-		return pci->ops->link_up(pci);
+    TRACE_ME("pci=0x%x", pci);
+	if (pci->ops && pci->ops->link_up) {
+        return pci->ops->link_up(pci);
+    }
 
 	val = dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1);
 	return ((val & PCIE_PORT_DEBUG1_LINK_UP) &&

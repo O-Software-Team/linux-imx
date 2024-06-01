@@ -47,7 +47,10 @@
 #define to_imx6_pcie(x)	dev_get_drvdata((x)->dev)
 
 #define TRACE_ME(fmt, ...) \
-    printk(KERN_NOTICE "%s:%d %s(): " fmt, __FILE__, __LINE__, __FUNCTION__, __VAR_ARGS__)
+    ({                                                                                          \
+        __printk_index_emit("%s:%d  %s() " fmt, NULL, NULL);                                    \
+        _printk_deferred("%s:%d  %s() " fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);  \
+    })
 
 enum imx6_pcie_variants {
 	IMX6Q,

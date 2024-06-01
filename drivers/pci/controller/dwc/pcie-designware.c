@@ -24,7 +24,11 @@
 #include "pcie-designware.h"
 
 #define TRACE_ME(fmt, ...) \
-    printk(KERN_NOTICE "%s:%d %s(): " fmt, __FILE__, __LINE__, __FUNCTION__, __VAR_ARGS__)
+    ({                                                                                          \
+        __printk_index_emit("%s:%d  %s() " fmt, NULL, NULL);                                    \
+        _printk_deferred("%s:%d  %s() " fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);  \
+    })
+
 
 static const char * const dw_pcie_app_clks[DW_PCIE_NUM_APP_CLKS] = {
 	[DW_PCIE_DBI_CLK] = "dbi",

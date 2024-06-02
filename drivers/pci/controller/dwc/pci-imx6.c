@@ -1585,7 +1585,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 			return ret;
 		}
 	} else if (imx6_pcie->reset_gpio == -EPROBE_DEFER) {
-        TRACE_ME("imx6_pcie->reset_gpio = -EPROBE_DEFER")
+        TRACE_ME("imx6_pcie->reset_gpio = -EPROBE_DEFER");
 		return imx6_pcie->reset_gpio;
 	}
 

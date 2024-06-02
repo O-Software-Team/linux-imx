@@ -23,11 +23,7 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
-#define TRACE_ME(fmt, ...) \
-    ({                                                                                          \
-        __printk_index_emit("%s:%d  %s() " fmt, NULL, NULL);                                    \
-        _printk_deferred("%s:%d  %s() " fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);  \
-    })
+#define TRACE_ME(fmt, ...) printk_index_wrap(_printk, KERN_WARNING fmt, ##__VA_ARGS__)
 
 
 static const char * const dw_pcie_app_clks[DW_PCIE_NUM_APP_CLKS] = {
@@ -657,7 +653,7 @@ int dw_pcie_wait_for_link(struct dw_pcie *pci)
 	int retries;
 
 	/* Check if the link is up or not */
-    TRACE_ME("pci=0x$x", pci);
+    TRACE_ME("pci=0x%x", pci);
 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
 		if (dw_pcie_link_up(pci))
 			break;

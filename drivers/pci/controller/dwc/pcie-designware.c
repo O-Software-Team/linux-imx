@@ -23,7 +23,8 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
-#define TRACE_ME(_fmt, ...)     printk_index_wrap(_printk, _fmt, ##__VA_ARGS__)
+#define TRACE_FMT(_fmt)         "justin: " _fmt
+#define TRACE_ME(_fmt, ...)     printk_index_wrap(_printk, TRACE_FMT(_fmt), ##__VA_ARGS__)
 
 
 static const char * const dw_pcie_app_clks[DW_PCIE_NUM_APP_CLKS] = {

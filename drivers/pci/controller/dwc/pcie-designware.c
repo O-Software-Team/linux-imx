@@ -23,7 +23,7 @@
 #include "../../pci.h"
 #include "pcie-designware.h"
 
-#define TRACE_FMT(_fmt)         "justin: " _fmt
+#define TRACE_FMT(_fmt)         KERN_WARNING "justin: " _fmt "\n"
 #define TRACE_ME(_fmt, ...)     printk_index_wrap(_printk, TRACE_FMT(_fmt), ##__VA_ARGS__)
 
 

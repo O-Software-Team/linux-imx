@@ -46,7 +46,7 @@
 
 #define to_imx6_pcie(x)	dev_get_drvdata((x)->dev)
 
-#define TRACE_FMT(_fmt)         "justin: " _fmt
+#define TRACE_FMT(_fmt)         KERN_WARNING "justin: " _fmt "\n"
 #define TRACE_ME(_fmt, ...)     printk_index_wrap(_printk, TRACE_FMT(_fmt), ##__VA_ARGS__)
 
 enum imx6_pcie_variants {
@@ -1009,7 +1009,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 	 * bus will not be detected at all.  This happens with PCIe switches.
 	 */
 	if (!imx6_pcie_cz_enabled) {
-        TRACE_ME("");
+        TRACE_ME("!imx6_pcie_cs_enabled");
 		dw_pcie_dbi_ro_wr_en(pci);
 		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
 		tmp &= ~PCI_EXP_LNKCAP_SLS;
@@ -1026,7 +1026,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
         TRACE_ME("dw_pcie_wait_for_link returned %d", ret);
         goto err_reset_phy;
     }
-    TRACE_ME("");
+    TRACE_ME("dw_pcie_wait_for_link returned 0");
 
 	if (pci->link_gen > 1) {
 		/* Allow faster modes after the link is up */
@@ -1069,6 +1069,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
             TRACE_ME("dw_pcie_wait_for_link returned %d", ret);
             goto err_reset_phy;
         }
+        TRACE_ME("dw_pcie_wait_for_link returned 0")
 	} else {
 		dev_info(dev, "Link: Only Gen1 is enabled\n");
 	}
@@ -1519,7 +1520,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 	struct device_node *node = dev->of_node;
 	int ret;
 
-    TRACE_ME("");
+    TRACE_ME("imx6_pcie_probe() entered");
 	imx6_pcie = devm_kzalloc(dev, sizeof(*imx6_pcie), GFP_KERNEL);
 	if (!imx6_pcie)
 		return -ENOMEM;
@@ -1756,20 +1757,20 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 
 	ret = imx6_pcie_attach_pd(dev);
 	if (ret) {
-        TRACE_ME("");
+        TRACE_ME("imx6_pcie_attach_pd returned %d", ret);
         return ret;
     }
 
 	if (imx6_pcie->drvdata->mode == DW_PCIE_EP_TYPE) {
 		ret = imx6_add_pcie_ep(imx6_pcie, pdev);
 		if (ret < 0) {
-            TRACE_ME("");
+            TRACE_ME("imx6_add_pcie_ep() returned %d", ret);
             return ret;
         }
 	} else {
 		ret = dw_pcie_host_init(&pci->pp);
 		if (ret < 0) {
-            TRACE_ME("");
+            TRACE_ME("dw_pcie_host_init() returned %s", ret);
             return ret;
         }
 	}
@@ -1979,7 +1980,7 @@ static int __init imx6_pcie_init(void)
 			"external abort on non-linefetch");
 #endif
 
-    TRACE_ME("pltaform_driver_register(imx6_pcie_driver)");
+    TRACE_ME("platform_driver_register(imx6_pcie_driver)");
 	return platform_driver_register(&imx6_pcie_driver);
 }
 device_initcall(imx6_pcie_init);

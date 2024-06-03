@@ -1069,7 +1069,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
             TRACE_ME("dw_pcie_wait_for_link returned %d", ret);
             goto err_reset_phy;
         }
-        TRACE_ME("dw_pcie_wait_for_link returned 0")
+        TRACE_ME("dw_pcie_wait_for_link returned 0");
 	} else {
 		dev_info(dev, "Link: Only Gen1 is enabled\n");
 	}

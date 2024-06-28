@@ -1002,7 +1002,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 	u32 tmp;
 	int ret;
 
-    TRACE_ME("pci=0x%x", pci);
+    TRACE_ME("pci=%p", pci);
 	/*
 	 * Force Gen1 operation when starting the link.  In case the link is
 	 * started in Gen2 mode, there is a possibility the devices on the
@@ -1538,7 +1538,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 
 	/* Find the PHY if one is defined, only imx7d uses it */
 	np = of_parse_phandle(node, "fsl,imx7d-pcie-phy", 0);
-    TRACE_ME("ev=0x%x, np=0x%x", dev, np);
+    TRACE_ME("ev=%p, np=%p", dev, np);
 	if (np) {
 		struct resource res;
 
@@ -1561,17 +1561,17 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 
 	if (of_property_read_u32(node, "hsio-cfg", &imx6_pcie->hsio_cfg))
 		imx6_pcie->hsio_cfg = 0;
-    TRACE_ME("imx6_pcie->hsio_cfg=0x%x",imx6_pcie->hsio_cfg);
+    TRACE_ME("imx6_pcie->hsio_cfg=%p", imx6_pcie->hsio_cfg);
 	if (of_property_read_u32(node, "local-addr", &imx6_pcie->local_addr))
 		imx6_pcie->local_addr = 0;
-    TRACE_ME("imx6_pcie->local_addr=0x%x",imx6_pcie->local_addr);
+    TRACE_ME("imx6_pcie->local_addr=0x%x",(unsigned int)(imx6_pcie->local_addr));
 
 	/* Fetch GPIOs */
 	imx6_pcie->reset_gpio = of_get_named_gpio(node, "reset-gpio", 0);
-    TRACE_ME("imx6_pcie->reset_gpio=0x%x", imx6_pcie->reset_gpio);
+    TRACE_ME("imx6_pcie->reset_gpio=%p", (imx6_pcie->reset_gpio));
 	imx6_pcie->gpio_active_high = of_property_read_bool(node,
 						"reset-gpio-active-high");
-    TRACE_ME("imx6_pcie->gpio_active_high=0x%x", imx6_pcie->gpio_active_high);
+    TRACE_ME("imx6_pcie->gpio_active_high=0x%x", (unsigned int)(imx6_pcie->gpio_active_high));
 	if (gpio_is_valid(imx6_pcie->reset_gpio)) {
 		ret = devm_gpio_request_one(dev, imx6_pcie->reset_gpio,
 				imx6_pcie->gpio_active_high ?

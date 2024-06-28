@@ -654,7 +654,7 @@ int dw_pcie_wait_for_link(struct dw_pcie *pci)
 	int retries;
 
 	/* Check if the link is up or not */
-    TRACE_ME("pci=0x%x", pci);
+    TRACE_ME("pci=%p", pci);
 	for (retries = 0; retries < LINK_WAIT_MAX_RETRIES; retries++) {
 		if (dw_pcie_link_up(pci))
 			break;
@@ -684,7 +684,7 @@ int dw_pcie_link_up(struct dw_pcie *pci)
 {
 	u32 val;
 
-    TRACE_ME("pci=0x%x", pci);
+    TRACE_ME("pci=%p", pci);
 	if (pci->ops && pci->ops->link_up) {
         return pci->ops->link_up(pci);
     }

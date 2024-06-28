@@ -641,16 +641,12 @@ void __init prepare_namespace(void)
 #endif
 		printk(KERN_INFO "Waiting for root device %s...\n",
 			saved_root_name);
-		while (driver_probe_done() != 0 ||
-			(ROOT_DEV = name_to_dev_t(saved_root_name)) == 0) {
-#ifdef TRACE_ME
+		while (driver_probe_done() != 0 || (ROOT_DEV = name_to_dev_t(saved_root_name)) == 0) {
             if ((count % 200) == 0) {
-                TRACE_ME("%s:%d %s()): waiting...", __FILE__, __LINE__, __FUNCTION__)
+                TRACE_ME("%s:%d %s()): waiting...", __FILE__, __LINE__, __FUNCTION__);
             }
             count += 5;
-#endif
             msleep(5);
-
         }
 		async_synchronize_full();
 	}

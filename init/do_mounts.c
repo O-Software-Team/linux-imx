@@ -446,7 +446,7 @@ retry:
 out:
 	put_page(page);
 }
- 
+
 #ifdef CONFIG_ROOT_NFS
 
 #define NFSROOT_TIMEOUT_MIN	5
@@ -641,6 +641,7 @@ void __init prepare_namespace(void)
 		async_synchronize_full();
 	}
 
+    TRACE_ME("%s:%d %s(): calling mount_root()", __FILE__, __LINE__, __FUNCTION__);
 	mount_root();
 out:
 	devtmpfs_mount();

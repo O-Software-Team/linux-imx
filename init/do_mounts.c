@@ -27,6 +27,9 @@
 
 #include "do_mounts.h"
 
+#define TRACE_FMT(_fmt)         KERN_WARNING "justin: " _fmt "\n"
+#define TRACE_ME(_fmt, ...)     printk_index_wrap(_printk, TRACE_FMT(_fmt), ##__VA_ARGS__)
+
 int root_mountflags = MS_RDONLY | MS_SILENT;
 static char * __initdata root_device_name;
 static char __initdata saved_root_name[64];

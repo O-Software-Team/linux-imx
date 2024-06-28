@@ -637,7 +637,7 @@ void __init prepare_namespace(void)
 	/* wait for any asynchronous scanning to complete */
 	if ((ROOT_DEV == 0) && root_wait) {
 #ifdef TRACE_ME
-        unsigned int count=0
+        unsigned int count = 0;
 #endif
 		printk(KERN_INFO "Waiting for root device %s...\n",
 			saved_root_name);
@@ -647,12 +647,11 @@ void __init prepare_namespace(void)
             if ((count % 200) == 0) {
                 TRACE_ME("%s:%d %s()): waiting...", __FILE__, __LINE__, __FUNCTION__)
             }
-#endif
-            msleep(5);
-        }
-#ifdef TRACE_ME
             count += 5;
 #endif
+            msleep(5);
+
+        }
 		async_synchronize_full();
 	}
 

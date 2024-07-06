@@ -1567,13 +1567,11 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 		return imx6_pcie->reset_gpio;
 	}
 
-#if 0
 	/* Fetch clocks */
 	imx6_pcie->pcie_bus = devm_clk_get(dev, "pcie_bus");
 	if (IS_ERR(imx6_pcie->pcie_bus))
 		return dev_err_probe(dev, PTR_ERR(imx6_pcie->pcie_bus),
 				     "pcie_bus clock source missing or invalid\n");
-#endif /* 0 */
 	imx6_pcie->pcie = devm_clk_get(dev, "pcie");
 	if (IS_ERR(imx6_pcie->pcie))
 		return dev_err_probe(dev, PTR_ERR(imx6_pcie->pcie),

@@ -42,7 +42,31 @@
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
+		clock-output-names = "pcie0_refclk";
 	};
+
+	pmic_osc: clock-pmic {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+		clock-output-names = "pmic_osc";
+	};
+};
+
+&A53_0 {
+	cpu-supply = <&buck2_regltr>;
+};
+
+&A53_1 {
+	cpu-supply = <&buck2_regltr>;
+};
+
+&A53_2 {
+	cpu-supply = <&buck2_regltr>;
+};
+
+&A53_3 {
+	cpu-supply = <&buck2_regltr>;
 };
 
 &i2c1 {
@@ -50,6 +74,154 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
+
+	pmic: pmic@4b {
+		compatible = "rohm,bd71837";
+		reg = <0x4b>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pmic>;
+		clocks = <&pmic_osc>;
+		clock-names = "osc";
+		clock-output-names = "pmic_clk";
+		interrupt-parent = <&gpio1>;
+		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
+		rohm,reset-snvs-powered;
+
+		regulators {
+			buck1_regltr: BUCK1 {
+				regulator-name = "buck1_regltr";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1300000>;
+				regulator-boot-on;
+				regulator-ramp-delay = <1250>;
+				rohm,dvs-run-voltage = <900000>;
+				rohm,dvs-idle-voltage = <850000>;
+				rohm,dvs-suspend-voltage = <800000>;
+				regulator-always-on;
+			};
+
+			buck2_regltr: BUCK2 {
+				regulator-name = "buck2_regltr";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1300000>;
+				regulator-boot-on;
+				regulator-ramp-delay = <1250>;
+				rohm,dvs-run-voltage = <1000000>;
+				rohm,dvs-idle-voltage = <900000>;
+				regulator-always-on;
+			};
+
+			buck3_regltr: BUCK3 {
+				regulator-name = "buck3_regltr";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1300000>;
+				regulator-boot-on;
+				rohm,dvs-run-voltage = <900000>;
+				regulator-always-on;
+			};
+
+			buck4_regltr: BUCK4 {
+				regulator-name = "buck4_regltr";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1300000>;
+				regulator-boot-on;
+				rohm,dvs-run-voltage = <1000000>;
+				regulator-always-on;
+			};
+
+			buck5_regltr: BUCK5 {
+				regulator-name = "buck5_regltr";
+				regulator-min-microvolt = <700000>;
+				regulator-max-microvolt = <1350000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			buck6_regltr: BUCK6 {
+				regulator-name = "buck6_regltr";
+				regulator-min-microvolt = <3000000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			buck7_regltr: BUCK7 {
+				regulator-name = "buck7_regltr";
+				regulator-min-microvolt = <1605000>;
+				regulator-max-microvolt = <1995000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			buck8_regltr: BUCK8 {
+				regulator-name = "buck8_regltr";
+				regulator-min-microvolt = <800000>;
+				regulator-max-microvolt = <1400000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo1_regltr: LDO1 {
+				regulator-name = "ldo1_regltr";
+				regulator-min-microvolt = <3000000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				/* leave on for snvs power button */
+				regulator-always-on;
+			};
+
+			ldo2_regltr: LDO2 {
+				regulator-name = "ldo2_regltr";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <900000>;
+				regulator-boot-on;
+				/* leave on for snvs power button */
+				regulator-always-on;
+			};
+
+			ldo3_regltr: LDO3 {
+				regulator-name = "ldo3_regltr";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo4_regltr: LDO4 {
+				regulator-name = "ldo4_regltr";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <1800000>;
+				/* regulator-boot-on; */
+				/* regulator-always-on; */
+			};
+
+			ldo5_regltr: LDO5 {
+				/* VDD_PHY_1V8 - PCIE, MIPI, USB and HDMI domains */
+				regulator-name = "ldo5_regltr";
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-always-on;
+			};
+
+			ldo6_regltr: LDO6 {
+				/* VDD_PHY_0V9 - PCIE, MIPI, USB and HDMI domains */
+				regulator-name = "ldo6_regltr";
+				regulator-min-microvolt = <900000>;
+				regulator-max-microvolt = <1800000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+
+			ldo7_regltr: LDO7 {
+				/* VDD_PHY_3V3 - USB domain */
+				regulator-name = "ldo7_regltr";
+				regulator-min-microvolt = <3000000>;
+				regulator-max-microvolt = <3300000>;
+				regulator-boot-on;
+				regulator-always-on;
+			};
+		};
+	};
 };
 
 &i2c2 {
@@ -205,28 +377,13 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
 	reset-gpio = <&gpio3 5 GPIO_ACTIVE_LOW>;
-	clocks = <&clk IMX8MQ_CLK_PCIE1_ROOT>,
-		 <&clk IMX8MQ_CLK_PCIE1_AUX>,
+        clocks = <&clk IMX8MQ_CLK_PCIE1_ROOT>,
+                 <&clk IMX8MQ_CLK_PCIE1_AUX>,
 		 <&clk IMX8MQ_CLK_PCIE1_PHY>,
-		 <&pcie0_refclk>;
-	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
-	status = "okay";
-
-	mwifiex {
-		compatible = "1131,2b42", "pci11ab,2b42", "pci1b4b,2b42";
-		reg = <0x0>;
-		#address-cells = <1>;
-		#size-cells = <1>;
-	};
-};
-
-&pcie_phy {
-	clocks = <&clk IMX8MQ_CLK_PCIE1_PHY>;
-	fsl,clkreq-unsupported;
-	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
-	fsl,tx-deemph-gen1 = <0x2d>;
-	fsl,tx-deemph-gen2 = <0xf>;
-	status = "okay";
+                 <&pcie0_refclk>;
+        clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
+	vph-supply = <&ldo7_regltr>;
+        status = "okay";
 };
 
 &sai2 {
@@ -305,60 +462,67 @@
 	status = "okay";
 };
 
+&wdog1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wdog>;
+	fsl,ext-reset-output;
+	status = "okay";
+};
+
 &iomuxc {
+	pinctrl_pmic: pmicgrp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_GPIO1_IO07_GPIO1_IO7	0x80  /* PMIC intr Active LOW */
+		>;
+	};
 	nfc_hpd: nfcgrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_GPIO1_IO06_GPIO1_IO6	0xd6  /* NFC_HPD Active HIGH */
+			MX8MQ_IOMUXC_GPIO1_IO06_GPIO1_IO6	0x16  /* NFC_HPD Active HIGH */
 		>;
 	};
 	wifi_reset_n: wifigrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_NAND_DATA01_GPIO3_IO7	0xc6  /* wifi reset Active LOW */
-		>;
-	};
-	wifi_wake_n: wifigrp {
-		fsl,pins = <
-			MX8MQ_IOMUXC_I2C4_SDA_GPIO5_IO21	0xc6  /* wifi wake Active LOW */
+			MX8MQ_IOMUXC_NAND_DATA01_GPIO3_IO7	0x16  /* wifi reset Active LOW */
 		>;
 	};
 	bt_reset_n: btgrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_NAND_DATA00_GPIO3_IO6	0xc6  /* bt reset Active LOW */
+			MX8MQ_IOMUXC_NAND_DATA00_GPIO3_IO6	0x16  /* bt reset Active LOW */
 		>;
 	};
 	wifi_disable_n: wifigrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_NAND_CE3_B_GPIO3_IO4	0xc6  /* wifi disable Active LOW */
+			MX8MQ_IOMUXC_NAND_CE3_B_GPIO3_IO4	0x16  /* wifi disable Active LOW */
 		>;
 	};
 	bt_wakeup: btgrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_NAND_CE1_B_GPIO3_IO2	0xd6  /* bt wakeup Active HIGH */
+			MX8MQ_IOMUXC_NAND_CE1_B_GPIO3_IO2	0x16  /* bt wakeup Active HIGH */
 		>;
 	};
 	wifi_pd_n: wifigrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_NAND_ALE_GPIO3_IO0		0xc6  /* wifi pd Active LOW */
+			MX8MQ_IOMUXC_NAND_ALE_GPIO3_IO0		0x16  /* wifi pd Active LOW */
 		>;
 	};
 	sc_elvddss_active: scrngrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8	0xd6  /* BL_ELVDD_EN Active HIGH */
+			MX8MQ_IOMUXC_GPIO1_IO08_GPIO1_IO8	0x16  /* BL_ELVDD_EN Active HIGH */
 		>;
 	};
 	sc_reset_n: scrngrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD1_GPIO1_IO20	0xc6  /* Active LOW */
+			MX8MQ_IOMUXC_ENET_TD1_GPIO1_IO20	0x16  /* Active LOW */
 		>;
 	};
 	ts_reset_n: tsgrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD0_GPIO1_IO21	0xc6  /* touch screen reset Active LOW */
+			MX8MQ_IOMUXC_ENET_TD0_GPIO1_IO21	0x16  /* touch screen reset Active LOW */
 		>;
 	};
 	ts_int_active: tsgrp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_ENET_TD2_GPIO1_IO19	0x80 /* touch screen interrupt */
+			MX8MQ_IOMUXC_ENET_TD2_GPIO1_IO19	0x19 /* touch screen interrupt */
 		>;
 	};
 	pinctrl_i2c1: i2c1grp {
@@ -384,8 +548,9 @@
 
 	pinctrl_pcie0: pcie0grp {
 		fsl,pins = <
-			MX8MQ_IOMUXC_I2C4_SCL_PCIE1_CLKREQ_B		0x76
+			MX8MQ_IOMUXC_I2C4_SCL_PCIE1_CLKREQ_B		0x60  /* Open drain, pull up */
 			MX8MQ_IOMUXC_NAND_CLE_GPIO3_IO5			0x16  /* wifi perst Active LOW */
+			MX8MQ_IOMUXC_I2C4_SDA_GPIO5_IO21		0x41  /* wifi wake Active LOW */
 		>;
 	};
 
@@ -510,13 +675,22 @@
 			MX8MQ_IOMUXC_SD2_RESET_B_USDHC2_RESET_B		0xc1
 		>;
 	};
-};
 
-&vpu_v4l2 {
-	status = "okay";
+	pinctrl_wdog: wdog1grp {
+		fsl,pins = <
+			MX8MQ_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B            0xc6
+		>;
+	};
+
 };
 
 &gpu3d {
+	power-supply = <&buck3_regltr>;
+	status = "okay";
+};
+
+&vpu_v4l2 {
+	power-supply = <&buck4_regltr>;
 	status = "okay";
 };
 
@@ -542,10 +716,10 @@
 	status = "okay";
 
 	mipi_panel: panel@0 {
-			compatible = "raydium,rm69091";
+			compatible = "visionox,rm69091";
 			reg = <0>;
-			pinctrl-0 = <&sc_elvddss_active>, <&sc_reset_n>;
 			pinctrl-names = "default";
+			pinctrl-0 = <&sc_elvddss_active>, <&sc_reset_n>;
 			elvddss-gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
 			reset-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
 			dsi-lanes = <1>;
@@ -619,12 +793,12 @@
         wifi-reset-n-on-hog {
                 gpio-hog;
                 gpios = <07 GPIO_ACTIVE_LOW>;
-                output-low;
+                output-high;
         };
         bt-reset-n-on-hog {
                 gpio-hog;
                 gpios = <06 GPIO_ACTIVE_LOW>;
-                output-low;
+                output-high;
         };
         wifi-disable-n-on-hog {
                 gpio-hog;
@@ -640,14 +814,5 @@
                 gpio-hog;
                 gpios = <00 GPIO_ACTIVE_LOW>;
                 output-low;
-        };
-};
-&gpio5 {
-        pinctrl-names = "default";
-        pinctrl-1 = <&wifi_wake_n>;
-        wifi-wake-n-on-hog {
-                gpio-hog;
-                gpios = <21 GPIO_ACTIVE_LOW>;
-                output-high;
         };
 };

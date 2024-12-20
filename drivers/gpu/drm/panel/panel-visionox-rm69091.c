@@ -16,9 +16,13 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
+#define RDDID_ID1	0xDA
+#define RDDID_ID2	0xDB
+#define RDDID_ID3	0xDC
+
 struct visionox_rm69091 {
 	struct drm_panel panel;
-	struct regulator_bulk_data supplies[1];
+	struct regulator_bulk_data supplies[2];
 	struct gpio_desc *reset_gpio;
 	struct gpio_desc *elvddss_gpio;
 	struct mipi_dsi_device *dsi;
@@ -32,13 +36,55 @@ static inline struct visionox_rm69091 *panel_to_ctx(struct drm_panel *panel)
 	return container_of(panel, struct visionox_rm69091, panel);
 }
 
+static int visionox_rm69091_read_id(struct visionox_rm69091 *ctx)
+{
+        u8 id1, id2, id3;
+        int ret;
+
+        dev_info(ctx->panel.dev, "send NOOP\n");
+
+	ret = mipi_dsi_dcs_nop(ctx->dsi);
+	if (ret < 0) {
+                dev_err(ctx->panel.dev, "could not send NOOP\n");
+                return ret;
+	}
+
+#if 0
+        ret = mipi_dsi_dcs_read(ctx->dsi, RDDID_ID1, &id1, 1);
+        if (ret < 0) {
+                dev_err(ctx->panel.dev, "could not read MTP ID1\n");
+                return ret;
+        }
+        ret = mipi_dsi_dcs_read(ctx->dsi, RDDID_ID2, &id2, 1);
+        if (ret < 0) {
+                dev_err(ctx->panel.dev, "could not read MTP ID2\n");
+                return ret;
+        }
+        ret = mipi_dsi_dcs_read(ctx->dsi, RDDID_ID3, &id3, 1);
+        if (ret < 0) {
+                dev_err(ctx->panel.dev, "could not read MTP ID3\n");
+                return ret;
+        }
+#endif
+        /*
+         * Multi-Time Programmable (?) memory contains manufacturer
+         * ID (e.g. Hydis 0x55), driver ID (e.g. NT35510 0xc0) and
+         * version.
+         */
+        dev_info(ctx->panel.dev, "MTP ID manufacturer: %02x version: %02x driver: %02x\n", id1, id2, id3);
+
+        return 0;
+}
+
 static int visionox_rm69091_power_on(struct visionox_rm69091 *ctx)
 {
 	int ret;
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
-	if (ret < 0)
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "visionox_rm69091_power_on bulk enable returned %d\n", ret);
 		return ret;
+	}
 
 	/*
 	 * Reset sequence of visionox panel requires the panel to be
@@ -74,10 +120,10 @@ static int visionox_rm69091_power_off(struct visionox_rm69091 *ctx)
 
 	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 }
+
 static int visionox_rm69091_enable(struct drm_panel *panel)
 {
 	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
-	int ret;
 
 	dev_err(ctx->panel.dev, "visionox_rm69091_enable\n");
 
@@ -93,7 +139,6 @@ static int visionox_rm69091_enable(struct drm_panel *panel)
 static int visionox_rm69091_disable(struct drm_panel *panel)
 {
 	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
-	int ret;
 
 	dev_err(ctx->panel.dev, "visionox_rm69091_disable\n");
 
@@ -148,6 +193,8 @@ static int visionox_rm69091_prepare(struct drm_panel *panel)
 	dev_err(ctx->panel.dev, "visionox_rm69091 POWER_ON in prepare\n");
 
 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
+
+	visionox_rm69091_read_id(ctx);
 
 	ret = mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x29, 0xfe, 0x00 }, 3);
 	if (ret < 0) {
@@ -282,7 +329,10 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	ctx->panel.dev = dev;
 	ctx->dsi = dsi;
 
-	ctx->supplies[0].supply = "buck6";
+	ctx->supplies[0].supply = "vdd1p8";
+	ctx->supplies[0].init_load_uA = 55000;
+	ctx->supplies[1].supply = "vdd3p3";
+	ctx->supplies[0].init_load_uA = 32000;
 
 	ret = devm_regulator_bulk_get(ctx->panel.dev, ARRAY_SIZE(ctx->supplies),
 				      ctx->supplies);
@@ -300,7 +350,7 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	ctx->elvddss_gpio = devm_gpiod_get(ctx->panel.dev,
 					 "elvddss", GPIOD_OUT_HIGH);
 	if (IS_ERR(ctx->elvddss_gpio)) {
-		dev_err(dev, "cannot get reset gpio %ld\n", PTR_ERR(ctx->elvddss_gpio));
+		dev_err(dev, "cannot get elvddss gpio %ld\n", PTR_ERR(ctx->elvddss_gpio));
 		return PTR_ERR(ctx->elvddss_gpio);
 	}
 
@@ -318,12 +368,6 @@ static int visionox_rm69091_probe(struct mipi_dsi_device *dsi)
 	if (ret < 0) {
 		dev_err(dev, "dsi attach failed ret = %d\n", ret);
 		goto err_dsi_attach;
-	}
-
-	ret = regulator_set_load(ctx->supplies[0].consumer, 55000);
-	if (ret) {
-		dev_err(dev, "regulator set load failed for buck6 3V3 supply ret = %d\n", ret);
-		goto err_set_load;
 	}
 
 	dev_err(dev, "visionox_rm69091_probe finish\n");
@@ -344,13 +388,12 @@ static void visionox_rm69091_remove(struct mipi_dsi_device *dsi)
 
 	dev_err(ctx->panel.dev, "visionox_rm69091_remove\n");
 	mipi_dsi_detach(ctx->dsi);
-	mipi_dsi_device_unregister(ctx->dsi);
 
 	drm_panel_remove(&ctx->panel);
 }
 
 static const struct of_device_id visionox_rm69091_of_match[] = {
-	{ .compatible = "raydium,rm69091" },
+	{ .compatible = "visionox,rm69091" },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, visionox_rm69091_of_match);
@@ -365,5 +408,5 @@ static struct mipi_dsi_driver visionox_rm69091_driver = {
 };
 module_mipi_dsi_driver(visionox_rm69091_driver);
 
-MODULE_DESCRIPTION("Visionox RM69091 DSI Panel Driver");
+MODULE_DESCRIPTION("Visionox RM69091 MIPI DSI Panel Driver");
 MODULE_LICENSE("GPL v2");

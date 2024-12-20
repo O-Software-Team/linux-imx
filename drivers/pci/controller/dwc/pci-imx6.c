@@ -176,7 +176,7 @@ struct imx6_pcie {
 #define CTRL2_PM_XMT_TURNOFF			BIT(9)
 #define STTS0_PM_LINKST_IN_L2			BIT(13)
 
-static int imx6_pcie_cz_enabled;
+static int imx6_pcie_cz_enabled = 1;
 static unsigned int imx6_pcie_grp_offset(const struct imx6_pcie *imx6_pcie)
 {
 	WARN_ON(imx6_pcie->drvdata->variant != IMX8MQ &&
@@ -354,6 +354,8 @@ static int pcie_phy_write(struct imx6_pcie *imx6_pcie, int addr, u16 data)
 
 static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
 {
+	struct device *dev = imx6_pcie->pci->dev;
+
 	switch (imx6_pcie->drvdata->variant) {
 	case IMX8QM:
 	case IMX8QM_EP:
@@ -378,17 +380,22 @@ static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
 				   imx6_pcie_grp_offset(imx6_pcie),
 				   IMX8MQ_GPR_PCIE_REF_USE_PAD,
 				   IMX8MQ_GPR_PCIE_REF_USE_PAD);
+
+		dev_err(dev, "IMX8MQ_GPR_PCIE_REF_USE_PAD set\n");
+
 		/*
 		 * Regarding the datasheet, the PCIE_VPH is suggested
 		 * to be 1.8V. If the PCIE_VPH is supplied by 3.3V, the
 		 * VREG_BYPASS should be cleared to zero.
 		 */
 		if (imx6_pcie->vph &&
-		    regulator_get_voltage(imx6_pcie->vph) > 3000000)
+		    regulator_get_voltage(imx6_pcie->vph) > 3000000) {
 			regmap_update_bits(imx6_pcie->iomuxc_gpr,
 					   imx6_pcie_grp_offset(imx6_pcie),
 					   IMX8MQ_GPR_PCIE_VREG_BYPASS,
 					   0);
+			dev_err(dev, "IMX8MQ_GPR_PCIE_VREG_BYPASS set to 0\n");
+		}
 		break;
 	case IMX7D:
 	case IMX7D_EP:
@@ -441,14 +448,26 @@ static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
 		dev_err(dev, "PCIe PLL lock timeout\n");
 }
 
+#define PCIE_PHY_ATEOVRD          (0x10)
+#define PCIE_PHY_MPLL_OVRD_IN_LO  (0x11)
+
 static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
 {
 	unsigned long phy_rate = clk_get_rate(imx6_pcie->pcie_phy);
 	int mult, div;
 	u16 val;
+/**************/
+    u16 ref_usb2_en;
+    u16 reg;
+    int ret;
+/**************/
 
-	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_IMX6_PHY))
+	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_IMX6_PHY)) {
+		dev_info(imx6_pcie->pci->dev, "imx6_setup_phy_mpll return IMX6_PCIE_FLAG_IMX6_PHY\n");
 		return 0;
+	}
+
+	dev_err(imx6_pcie->pci->dev, "PHY clock rate is %lu\n", phy_rate);
 
 	switch (phy_rate) {
 	case 125000000:
@@ -470,21 +489,88 @@ static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
 			"Unsupported PHY reference clock rate %lu\n", phy_rate);
 		return -EINVAL;
 	}
+/**********************/
+    dev_info(imx6_pcie->pci->dev, "overriding PCIe PHY MPLL config: multiplier = %d, clkdiv2 = %d\n",
+        mult, div);
 
+    /* set the MPLL override value to 'disabled' */
+    pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &reg);
+#if 0
+    reg &= ~(0x1 << 1);
+    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
+#endif
+
+    /* enable MPLL override */
+    reg |= (0x1 << 0);
+    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
+
+    /* set the new MPLL multiplier */
+    reg &= ~(0x7F << 2);
+    reg |=  (mult << 2);
+    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
+
+    /* enable multiplier override */
+    reg |= (0x1 << 9);
+    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
+
+    /*
+     * set the div.  when this override is enabled it
+     * overrides both div and ref_usb2_en.  make sure
+     * the overriden ref_usb2_en reflects the original value.
+     */
+    pcie_phy_read(imx6_pcie, PCIE_PHY_ATEOVRD, &reg);
+    ref_usb2_en = (reg >> 3) & 0x1;
+
+    /* set the current value of ref_usb2_en as the override */
+    reg &= ~(0x1 << 1);
+    reg |=  (ref_usb2_en << 1);
+
+    /* set the div override */
+    reg &= ~(0x1 << 0);
+    reg |=  (div << 0);
+
+    pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, reg);
+
+    /* enable the div override */
+    reg |= (0x1 << 2);  /* ateovrd_en */
+    pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, reg);
+
+    /* disable the MPLL override */
+    pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &reg);
+#if 0
+    reg &= ~(0x1 << 0);
+#endif
+    reg |=  (0x1 << 1);
+    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
+
+/**********************/
+#if 0 /*original*/
 	pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &val);
+
+	dev_err(imx6_pcie->pci->dev, "initial PCIE_PHY_MPLL_OVRD_IN_LO 0x%x\n", val);
+
 	val &= ~(PCIE_PHY_MPLL_MULTIPLIER_MASK <<
 		 PCIE_PHY_MPLL_MULTIPLIER_SHIFT);
 	val |= mult << PCIE_PHY_MPLL_MULTIPLIER_SHIFT;
 	val |= PCIE_PHY_MPLL_MULTIPLIER_OVRD;
+
+	dev_err(imx6_pcie->pci->dev, "wrote back PCIE_PHY_MPLL_OVRD_IN_LO 0x%x\n", val);
+
 	pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, val);
 
 	pcie_phy_read(imx6_pcie, PCIE_PHY_ATEOVRD, &val);
+
+	dev_err(imx6_pcie->pci->dev, "initial PCIE_PHY_ATEOVRD 0x%x\n", val);
+
 	val &= ~(PCIE_PHY_ATEOVRD_REF_CLKDIV_MASK <<
 		 PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT);
 	val |= div << PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT;
 	val |= PCIE_PHY_ATEOVRD_EN;
-	pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, val);
 
+	dev_err(imx6_pcie->pci->dev, "wrote back PCIE_PHY_ATEOVRD 0x%x\n", val);
+
+	pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, val);
+#endif
 	return 0;
 }
 
@@ -999,12 +1085,16 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 	u32 tmp;
 	int ret;
 
+	dev_info(dev, "link_gen = %d\n", pci->link_gen);
+
 	/*
 	 * Force Gen1 operation when starting the link.  In case the link is
 	 * started in Gen2 mode, there is a possibility the devices on the
 	 * bus will not be detected at all.  This happens with PCIe switches.
 	 */
 	if (!imx6_pcie_cz_enabled) {
+		dev_info(dev, "imx6_pcie_cz_enabled ...\n");
+
 		dw_pcie_dbi_ro_wr_en(pci);
 		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
 		tmp &= ~PCI_EXP_LNKCAP_SLS;
@@ -1017,8 +1107,10 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 	imx6_pcie_ltssm_enable(dev);
 
 	ret = dw_pcie_wait_for_link(pci);
-	if (ret)
+	if (ret) {
+		dev_info(dev, "goto err_reset_phy wait for link FAIL\n");
 		goto err_reset_phy;
+	}
 
 	if (pci->link_gen > 1) {
 		/* Allow faster modes after the link is up */
@@ -1070,9 +1162,9 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
 
 err_reset_phy:
 	imx6_pcie->link_is_up = false;
-	dev_dbg(dev, "PHY DEBUG_R0=0x%08x DEBUG_R1=0x%08x\n",
-		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG0),
-		dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1));
+	dev_info(dev, "PHY DEBUG_R0=0x%08x DEBUG_R1=0x%08x\n",
+		 dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG0),
+		 dw_pcie_readl_dbi(pci, PCIE_PORT_DEBUG1));
 	imx6_pcie_reset_phy(imx6_pcie);
 	/*
 	 * FIXME.
@@ -1141,6 +1233,8 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
 	struct device *dev = pci->dev;
 	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
 	int ret;
+
+	dev_info(dev, "imx6_pcie_host_init ENTER\n");
 
 	if (imx6_pcie->vpcie) {
 		ret = regulator_enable(imx6_pcie->vpcie);
@@ -1218,6 +1312,8 @@ static void imx6_pcie_host_deinit(struct dw_pcie_rp *pp)
 {
 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
 	struct device *dev = pci->dev;
+
+	dev_info(dev, "imx6_pcie_host_deinit ENTER\n");
 
 	imx6_pcie_host_exit(pp);
 	imx6_pcie_detach_pd(dev);
@@ -1812,7 +1908,9 @@ static const struct imx6_pcie_drvdata drvdata[] = {
 	},
 	[IMX8MQ] = {
 		.variant = IMX8MQ,
-		.flags = IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
+		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
+			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
+			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
 		.gpr = "fsl,imx8mq-iomuxc-gpr",
 	},
 	[IMX8MQ_EP] = {

@@ -2,7 +2,7 @@
 *
 *    The MIT License (MIT)
 *
-*    Copyright (c) 2014 - 2023 Vivante Corporation
+*    Copyright (c) 2014 - 2020 Vivante Corporation
 *
 *    Permission is hereby granted, free of charge, to any person obtaining a
 *    copy of this software and associated documentation files (the "Software"),
@@ -26,7 +26,7 @@
 *
 *    The GPL License (GPL)
 *
-*    Copyright (C) 2014 - 2023 Vivante Corporation
+*    Copyright (C) 2014 - 2020 Vivante Corporation
 *
 *    This program is free software; you can redistribute it and/or
 *    modify it under the terms of the GNU General Public License
@@ -53,7 +53,7 @@
 *****************************************************************************/
 
 
-/*Auto created on 2023-08-15 05:36*/
+/*Auto created on 2023-06-16 18:57*/
 #ifndef _gc_feature_database_h_
 #define _gc_feature_database_h_
 
@@ -120,7 +120,7 @@ typedef struct
     gctUINT32 TPEngine_PwlLUTCount;
     gctUINT32 TPEngine_PwlLUTSize;
     gctUINT32 VIP_SRAM_SIZE;
-    gctUINT32 VIP_SRAM_SIZE_ARRAY[9];
+    gctUINT32 VIP_SRAM_SIZE_ARRAY;
     gctUINT32 TPEngine_CoreCount;
     gctUINT32 AXI_SRAM_SIZE;
     gctUINT32 NN_INIMAGE_OFFSET_BITS;
@@ -165,8 +165,6 @@ typedef struct
     gctUINT32 NN_SMALL_ACCUM_BITS;
     gctUINT32 NN_COEF_DECOMPRESS_PERF_X;
     gctUINT32 SP_VECTOR_DEPTH;
-    gctUINT32 VIPSRAM_CLK_DOMAIN_RATIO_PERCENT;
-    gctUINT32 VIP_VERSION;
     gctUINT32 REG_FastClear:1;
     gctUINT32 REG_SpecialAntiAliasing:1;
     gctUINT32 REG_Pipe3D:1;
@@ -656,12 +654,10 @@ typedef struct
     gctUINT32 NN_REMOVE_POOLING:1;
     gctUINT32 NN_40BIT_BIAS:1;
     gctUINT32 TP_REMOVE_USC:1;
-    gctUINT32 NN_ZDP3:1;
     gctUINT32 NN_ZDP6:1;
-    gctUINT32 NN_ZDP9:1;
-    gctUINT32 NN_ZDP18:1;
     gctUINT32 NN_XYDP9:1;
     gctUINT32 NN_FIRST_PIXEL_POOLING:1;
+    gctUINT32 NN_ZDP3:1;
     gctUINT32 NN_XYDP6:1;
     gctUINT32 SWTILING_PHASE3:1;
     gctUINT32 MCFE:1;
@@ -776,7 +772,6 @@ typedef struct
     gctUINT32 NN_SPLIT_X_AMONG_CLUSTER:1;
     gctUINT32 NN_SUPPORT_ZDP_LOOP6:1;
     gctUINT32 NN_FP8_PHASE1:1;
-    gctUINT32 NN_SUPPORT_FUSA:1;
     gctUINT32 NN_DEPTHWISE_ENHANCEMENT:1;
     gctUINT32 NN_CONV_1X1_ENHANCEMENT:1;
     gctUINT32 SUPPORT_DYNAMIC_SHAPE:1;
@@ -897,11 +892,7 @@ typedef struct
     gctUINT32 VZ_GROUP_START_Z_OVERFLOW_FIX:1;
     gctUINT32 V82_STREAMMODE_VIPSRAM_ADDRESS_FIX:1;
     gctUINT32 GEMM_NO_SUPPORT_SMALLBATCH_FIX:1;
-    gctUINT32 SBP1_KHEAD_CMDSIZE_FIX:1;
-    gctUINT32 PERF_BURSTCOLLECTOR_MAXSIZE_FIX:1;
     gctUINT32 PERF_KERNEL_DESCRIPTOR_SOURCE_FIX:1;
-    gctUINT32 SP_NOIN_IMGRD_DUMMY_FIX:1;
-    gctUINT32 NN_4BIT_PERF_EVEN_TILEXSIZE_FIX:1;
     gctUINT32 NN_INTERLEVE8:1;
     gctUINT32 NN_FP16_ALU:1;
     gctUINT32 NN_INT16_ALU:1;
@@ -917,8 +908,6 @@ typedef struct
     gctUINT32 IMAGE_PARTIAL_CACHE:1;
 } gcsFEATURE_DATABASE;
 
-#define FEATURE_BIT_START 116
-#define FEATURE_BIT_END 863
 static gcsFEATURE_DATABASE gChipInfo[] = {
     /* gc320_5007 */
     {
@@ -982,7 +971,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -1027,8 +1016,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x1, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x0, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -1518,12 +1505,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -1638,7 +1623,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -1759,11 +1743,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -1840,7 +1820,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -1885,8 +1865,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x1, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x0, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -2376,12 +2354,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -2496,7 +2472,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -2617,11 +2592,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -2698,7 +2669,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -2743,8 +2714,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x1, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x0, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -3234,12 +3203,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -3354,7 +3321,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -3475,11 +3441,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -3556,7 +3518,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -3601,8 +3563,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x0, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -4092,12 +4052,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -4212,7 +4170,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -4333,11 +4290,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -4414,7 +4367,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -4459,8 +4412,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -4950,12 +4901,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -5070,7 +5019,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -5191,11 +5139,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -5272,7 +5216,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -5317,8 +5261,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x1, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x0, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -5808,12 +5750,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -5928,7 +5868,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -6049,11 +5988,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -6130,7 +6065,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -6175,8 +6110,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x1, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x0, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -6666,12 +6599,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -6786,7 +6717,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -6907,11 +6837,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -6988,7 +6914,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -7033,8 +6959,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -7524,12 +7448,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -7644,7 +7566,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -7765,11 +7686,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -7846,7 +7763,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -7891,8 +7808,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -8382,12 +8297,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -8502,7 +8415,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -8623,11 +8535,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -8704,7 +8612,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -8749,8 +8657,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -9240,12 +9146,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -9360,7 +9264,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -9481,11 +9384,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -9562,7 +9461,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -9607,8 +9506,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -10098,12 +9995,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -10218,7 +10113,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -10339,11 +10233,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -10420,7 +10310,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -10465,8 +10355,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -10956,12 +10844,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -11076,7 +10962,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -11197,11 +11082,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -11278,7 +11159,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -11323,8 +11204,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -11814,12 +11693,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -11934,7 +11811,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -12055,11 +11931,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -12136,7 +12008,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -12181,8 +12053,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -12672,12 +12542,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -12792,7 +12660,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -12913,11 +12780,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -12994,7 +12857,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -13039,8 +12902,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -13530,12 +13391,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -13650,7 +13509,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -13771,11 +13629,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -13852,7 +13706,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -13897,8 +13751,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -14388,12 +14240,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -14508,7 +14358,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -14629,11 +14478,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -14710,7 +14555,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -14755,8 +14600,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -15246,12 +15089,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -15366,7 +15207,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -15487,11 +15327,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -15568,7 +15404,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -15613,8 +15449,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -16104,12 +15938,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -16224,7 +16056,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -16345,11 +16176,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -16426,7 +16253,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -16471,8 +16298,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -16962,12 +16787,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -17082,7 +16905,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -17203,11 +17025,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -17284,7 +17102,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -17329,8 +17147,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -17820,12 +17636,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -17940,7 +17754,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -18061,11 +17874,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -18142,7 +17951,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -18187,8 +17996,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -18678,12 +18485,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -18798,7 +18603,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -18919,11 +18723,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -19000,7 +18800,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -19045,8 +18845,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -19536,12 +19334,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -19656,7 +19452,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -19777,11 +19572,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -19858,7 +19649,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -19903,8 +19694,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -20394,12 +20183,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -20514,7 +20301,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -20635,11 +20421,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -20716,7 +20498,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -20761,8 +20543,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -21252,12 +21032,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -21372,7 +21150,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -21493,11 +21270,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -21574,7 +21347,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x0, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x0, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x0, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -21619,8 +21392,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x0, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x0, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x1, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -22110,12 +21881,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x0, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x0, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x0, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -22230,7 +21999,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -22351,11 +22119,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x0, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x0, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x0, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x0, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x0, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x0, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -22432,7 +22196,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x400, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x10, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x40000, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x3, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x5, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -22477,8 +22241,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x20, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x2, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x32, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -22942,8 +22704,8 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x1, /* gcFEATURE_BIT_TP_LRN */
         0x1, /* gcFEATURE_BIT_TP_REORDER */
         0x1, /* gcFEATURE_BIT_TF_QUANTIZATION */
-        0x1, /* gcFEATURE_BIT_NN_NONZERO_BORDER */
-        0x0, /* gcFEATURE_BIT_NN_MIRROR_BORDER */
+        0x0, /* gcFEATURE_BIT_NN_NONZERO_BORDER */
+        0x1, /* gcFEATURE_BIT_NN_MIRROR_BORDER */
         0x0, /* gcFEATURE_BIT_AI_GPU */
         0x0, /* gcFEATURE_BIT_EVIS_NO_ABSDIFF */
         0x0, /* gcFEATURE_BIT_EVIS_NO_BITREPLACE */
@@ -22968,12 +22730,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x1, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x1, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x1, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x1, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -23088,7 +22848,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -23209,11 +22968,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x1, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x1, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x1, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x1, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x1, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x1, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x1, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -23225,7 +22980,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x1, /* gcFEATURE_BIT_ZRL_8BIT */
         0x0, /* gcFEATURE_BIT_DDR_BURST_LEN_256B */
         0x1, /* gcFEATURE_BIT_XY_OFFSET_LIMITATION_FIX */
-        0x0, /* gcFEATURE_BIT_NN_NONZERO_MIRROR_BORDER */
+        0x1, /* gcFEATURE_BIT_NN_NONZERO_MIRROR_BORDER */
         0x0, /* gcFEATURE_BIT_IMAGE_PARTIAL_CACHE */
     },
     /* vipnano-si+ */
@@ -23290,7 +23045,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x400, /* gcFEATURE_VALUE_TPEngine_PwlLUTCount */
         0x10, /* gcFEATURE_VALUE_TPEngine_PwlLUTSize */
         0x40000, /* gcFEATURE_VALUE_VIP_SRAM_SIZE */
-        {0x0, }, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
+        0x0, /* gcFEATURE_VALUE_VIP_SRAM_SIZE_ARRAY */
         0x3, /* gcFEATURE_VALUE_TPEngine_CoreCount */
         0x0, /* gcFEATURE_VALUE_AXI_SRAM_SIZE */
         0x5, /* gcFEATURE_VALUE_NN_INIMAGE_OFFSET_BITS */
@@ -23335,8 +23090,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x20, /* gcFEATURE_VALUE_NN_SMALL_ACCUM_BITS */
         0x2, /* gcFEATURE_VALUE_NN_COEF_DECOMPRESS_PERF_X */
         0x0, /* gcFEATURE_VALUE_SP_VECTOR_DEPTH */
-        0x32, /* gcFEATURE_VALUE_VIPSRAM_CLK_DOMAIN_RATIO_PERCENT */
-        0x0, /* gcFEATURE_VALUE_VIP_VERSION */
         0x0, /* gcFEATURE_BIT_REG_FastClear */
         0x0, /* gcFEATURE_BIT_REG_SpecialAntiAliasing */
         0x1, /* gcFEATURE_BIT_REG_Pipe3D */
@@ -23800,8 +23553,8 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x1, /* gcFEATURE_BIT_TP_LRN */
         0x1, /* gcFEATURE_BIT_TP_REORDER */
         0x1, /* gcFEATURE_BIT_TF_QUANTIZATION */
-        0x1, /* gcFEATURE_BIT_NN_NONZERO_BORDER */
-        0x0, /* gcFEATURE_BIT_NN_MIRROR_BORDER */
+        0x0, /* gcFEATURE_BIT_NN_NONZERO_BORDER */
+        0x1, /* gcFEATURE_BIT_NN_MIRROR_BORDER */
         0x0, /* gcFEATURE_BIT_AI_GPU */
         0x0, /* gcFEATURE_BIT_EVIS_NO_ABSDIFF */
         0x0, /* gcFEATURE_BIT_EVIS_NO_BITREPLACE */
@@ -23826,12 +23579,10 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_REMOVE_POOLING */
         0x0, /* gcFEATURE_BIT_NN_40BIT_BIAS */
         0x0, /* gcFEATURE_BIT_TP_REMOVE_USC */
-        0x1, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_ZDP6 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP9 */
-        0x0, /* gcFEATURE_BIT_NN_ZDP18 */
         0x0, /* gcFEATURE_BIT_NN_XYDP9 */
         0x1, /* gcFEATURE_BIT_NN_FIRST_PIXEL_POOLING */
+        0x1, /* gcFEATURE_BIT_NN_ZDP3 */
         0x0, /* gcFEATURE_BIT_NN_XYDP6 */
         0x1, /* gcFEATURE_BIT_SWTILING_PHASE3 */
         0x0, /* gcFEATURE_BIT_MCFE */
@@ -23946,7 +23697,6 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x0, /* gcFEATURE_BIT_NN_SPLIT_X_AMONG_CLUSTER */
         0x0, /* gcFEATURE_BIT_NN_SUPPORT_ZDP_LOOP6 */
         0x0, /* gcFEATURE_BIT_NN_FP8_PHASE1 */
-        0x0, /* gcFEATURE_BIT_NN_SUPPORT_FUSA */
         0x0, /* gcFEATURE_BIT_NN_DEPTHWISE_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_NN_CONV_1X1_ENHANCEMENT */
         0x0, /* gcFEATURE_BIT_SUPPORT_DYNAMIC_SHAPE */
@@ -24067,11 +23817,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x1, /* gcFEATURE_BIT_VZ_GROUP_START_Z_OVERFLOW_FIX */
         0x1, /* gcFEATURE_BIT_V82_STREAMMODE_VIPSRAM_ADDRESS_FIX */
         0x1, /* gcFEATURE_BIT_GEMM_NO_SUPPORT_SMALLBATCH_FIX */
-        0x1, /* gcFEATURE_BIT_SBP1_KHEAD_CMDSIZE_FIX */
-        0x0, /* gcFEATURE_BIT_PERF_BURSTCOLLECTOR_MAXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_PERF_KERNEL_DESCRIPTOR_SOURCE_FIX */
-        0x1, /* gcFEATURE_BIT_SP_NOIN_IMGRD_DUMMY_FIX */
-        0x1, /* gcFEATURE_BIT_NN_4BIT_PERF_EVEN_TILEXSIZE_FIX */
         0x0, /* gcFEATURE_BIT_NN_INTERLEVE8 */
         0x0, /* gcFEATURE_BIT_NN_FP16_ALU */
         0x1, /* gcFEATURE_BIT_NN_INT16_ALU */
@@ -24083,7 +23829,7 @@ static gcsFEATURE_DATABASE gChipInfo[] = {
         0x1, /* gcFEATURE_BIT_ZRL_8BIT */
         0x0, /* gcFEATURE_BIT_DDR_BURST_LEN_256B */
         0x1, /* gcFEATURE_BIT_XY_OFFSET_LIMITATION_FIX */
-        0x0, /* gcFEATURE_BIT_NN_NONZERO_MIRROR_BORDER */
+        0x1, /* gcFEATURE_BIT_NN_NONZERO_MIRROR_BORDER */
         0x0, /* gcFEATURE_BIT_IMAGE_PARTIAL_CACHE */
     },
 };

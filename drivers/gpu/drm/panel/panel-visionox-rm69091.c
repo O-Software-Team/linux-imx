@@ -28,6 +28,7 @@ struct visionox_rm69091 {
 	struct dentry *debugfs;
 	u8 display_id[3];
 	bool prepared;
+	bool enabled;
 	bool probed;
 };
 
@@ -209,10 +210,109 @@ static int visionox_rm69091_unprepare(struct drm_panel *panel)
 
 	if (ctx->prepared == false)
 		return 0;
+	dev_err(ctx->panel.dev, "visionox_rm69091_unprepare\n");
 
 	ctx->dsi->mode_flags = 0;
 
-	dev_err(ctx->panel.dev, "visionox_rm69091_unprepare\n");
+	ret = visionox_rm69091_pwr_off(ctx);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "pwr_off failed, ret = %d\n", ret);
+	}
+
+	ctx->prepared = false;
+	dev_err(ctx->panel.dev, "visionox_rm69091_unprepare finish\n");
+	return ret;
+}
+
+
+static void visionox_rm69091_init_sequence(struct visionox_rm69091 *ctx)
+{
+	int ret;
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0xfe, (u8[]) { 0x00 }, 1);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 1 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x31, (u8[]) { 0x00, 0x28, 0x01, 0xb9 }, 4);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 2 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x30, (u8[]) { 0x00, 0x01, 0x01, 0xda }, 4);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 3 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x12, (u8[]) { 0x00 }, 1);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 4 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x2a, (u8[]) { 0x00, 0x28, 0x01, 0xb9 }, 4);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 5 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x2b, (u8[]) { 0x00, 0x00, 0x01, 0xdb }, 4);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 6 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x35, (u8[]) { 0x00 }, 1);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 7 failed, ret = %d\n", ret);
+	}
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x51, (u8[]) { 0xff }, 1);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "cmd set tx step 8 failed, ret = %d\n", ret);
+	}
+}
+
+static int visionox_rm69091_enable(struct drm_panel *panel)
+{
+	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
+	int ret;
+
+	if (ctx->enabled == true)
+		return 0;
+
+	dev_err(ctx->panel.dev, "visionox_rm69091_enable\n");
+
+	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
+
+	visionox_rm69091_init_sequence(ctx);
+
+	ctx->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x11, (u8[]) { 0x0 }, 0);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "exit_sleep_mode cmd failed ret = %d\n", ret);
+		return ret;
+	}
+
+	/* Per DSI spec wait 120ms after sending exit sleep DCS command */
+	msleep(120);
+
+	ret = mipi_dsi_dcs_write(ctx->dsi, 0x29, (u8[]) { 0x00 }, 0);
+	if (ret < 0) {
+		dev_err(ctx->panel.dev, "set_display_on cmd failed ret = %d\n", ret);
+		return ret;
+	}
+	msleep(20);
+
+	ctx->enabled = true;
+	return 0;
+}
+
+static int visionox_rm69091_disable(struct drm_panel *panel)
+{
+	struct visionox_rm69091 *ctx = panel_to_ctx(panel);
+	int ret;
+
+        if (!ctx->enabled)
+                return 0;
 
 	ret = mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_SET_DISPLAY_OFF, NULL, 0);
 	if (ret < 0)
@@ -226,10 +326,8 @@ static int visionox_rm69091_unprepare(struct drm_panel *panel)
 		dev_err(ctx->panel.dev, "enter_sleep cmd failed ret = %d\n", ret);
 	}
 
-	ret = visionox_rm69091_pwr_off(ctx);
-	ctx->prepared = false;
-	dev_err(ctx->panel.dev, "visionox_rm69091_unprepare finish\n");
-	return ret;
+	ctx->enabled = false;
+	return 0;
 }
 
 static int visionox_rm69091_prepare(struct drm_panel *panel)
@@ -239,125 +337,15 @@ static int visionox_rm69091_prepare(struct drm_panel *panel)
 
 	dev_err(ctx->panel.dev, "visionox_rm69091_prepare\n");
 
-	if (ctx->prepared == true)
-		return 0;
-
 	ret = visionox_rm69091_pwr_on_reset(ctx);
 	if (ret < 0)
 		return ret;
 
 	dev_err(ctx->panel.dev, "visionox_rm69091 POWER_ON in prepare\n");
-
-	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0xfe, (u8[]) { 0x00 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 1 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x31, (u8[]) { 0x00, 0x28, 0x01, 0xb9 }, 4);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 2 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x30, (u8[]) { 0x00, 0x01, 0x01, 0xda }, 4);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 3 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x12, (u8[]) { 0x00 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 4 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x2a, (u8[]) { 0x00, 0x28, 0x01, 0xb9 }, 4);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 5 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x2b, (u8[]) { 0x00, 0x00, 0x01, 0xdb }, 4);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 6 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x35, (u8[]) { 0x00 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 7 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x51, (u8[]) { 0xff }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "cmd set tx step 8 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x11, (u8[]) { 0x0 }, 0);
-	if (ret < 0) {
-	dev_err(ctx->panel.dev, "exit_sleep_mode cmd failed ret = %d\n", ret);
-		goto power_off;
-	}
-
-	/* Per DSI spec wait 120ms after sending exit sleep DCS command */
-	msleep(120);
-
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x29, (u8[]) { 0x00 }, 0);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "set_display_on cmd failed ret = %d\n", ret);
-		goto power_off;
-	}
-
-	ctx->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
-
-	/* Per DSI spec wait 120ms after sending set_display_on DCS command */
-	msleep(120);
-
-//################################## HBM ON #######################################
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0xfe, (u8[]) { 0x00 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "HBM ON step 1 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x66, (u8[]) { 0x02 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "HBM ON step 2 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-//################################## HBM ON #######################################
-
-//################################## AOD ON #######################################
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0xfe, (u8[]) { 0x00 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "AOD ON step 1 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x35, (u8[]) { 0x02 }, 1);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "AOD ON step 2 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-	ret = mipi_dsi_dcs_write(ctx->dsi, 0x39, (u8[]) { 0x00 }, 0);
-	if (ret < 0) {
-		dev_err(ctx->panel.dev, "AOD ON step 3 failed, ret = %d\n", ret);
-		goto power_off;
-	}
-//################################## AOD ON #######################################
-
-	ctx->prepared = true;
    
-	dev_err(ctx->panel.dev, "visionox_rm69091_prepare finish\n");
-	return 0;
+	ctx->prepared = true;
 
-power_off:
-	ctx->prepared = false;
-	dev_err(ctx->panel.dev, "visionox_rm69091_prepare poweroff\n");
-	return ret;
+	return 0;
 }
 
 struct panel_desc_dsi {
@@ -443,6 +431,8 @@ static int visionox_rm69091_get_modes(struct drm_panel *panel,
 static const struct drm_panel_funcs visionox_rm69091_drm_funcs = {
 	.unprepare = visionox_rm69091_unprepare,
 	.prepare = visionox_rm69091_prepare,
+	.enable = visionox_rm69091_enable,
+	.disable = visionox_rm69091_disable,
 	.get_modes = visionox_rm69091_get_modes,
 };
 
@@ -550,7 +540,7 @@ static int visionox_rm69091_dsi_probe(struct mipi_dsi_device *dsi)
 		goto err_dsi_attach;
 	}
 
-	dev_set_drvdata(dev, &ctx->panel);
+	//dev_set_drvdata(dev, &ctx->panel);
 
 	visionox_rm69091_debugfs_init(ctx);
 
@@ -613,8 +603,7 @@ static void __exit visionox_rm69091_exit(void)
 }
 module_exit(visionox_rm69091_exit);
 
-MODULE_SOFTDEP("pre: rohm_bd718x7");
-MODULE_SOFTDEP("pre: nwl-dsi");
+MODULE_SOFTDEP("pre: rohm_bd718x7, nwl-dsi");
 MODULE_AUTHOR("Daniel Fields<dfields@osoftware.com>");
 MODULE_DESCRIPTION("Visionox RM69091 OPPO display MIPI DSI Driver");
 MODULE_LICENSE("GPL v2");

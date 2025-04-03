@@ -176,7 +176,7 @@ struct imx6_pcie {
 #define CTRL2_PM_XMT_TURNOFF			BIT(9)
 #define STTS0_PM_LINKST_IN_L2			BIT(13)
 
-static int imx6_pcie_cz_enabled = 1;
+static int imx6_pcie_cz_enabled = 0; /* This forces gen 1 in imx6_pcie_start_link() below */
 static unsigned int imx6_pcie_grp_offset(const struct imx6_pcie *imx6_pcie)
 {
 	WARN_ON(imx6_pcie->drvdata->variant != IMX8MQ &&
@@ -213,9 +213,11 @@ static void imx6_pcie_configure_type(struct imx6_pcie *imx6_pcie)
 			mask = IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE;
 			val  = FIELD_PREP(IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE,
 					  mode);
+			dev_info(imx6_pcie->pci->dev, "IMX8MQ_GPR12_PCIE2_CTRL_DEVICE_TYPE\n");
 		} else {
 			mask = IMX6Q_GPR12_DEVICE_TYPE;
 			val  = FIELD_PREP(IMX6Q_GPR12_DEVICE_TYPE, mode);
+			dev_info(imx6_pcie->pci->dev, "IMX6Q_GPR12_DEVICE_TYPE\n");
 		}
 		break;
 	default:
@@ -395,6 +397,12 @@ static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
 					   IMX8MQ_GPR_PCIE_VREG_BYPASS,
 					   0);
 			dev_err(dev, "IMX8MQ_GPR_PCIE_VREG_BYPASS set to 0\n");
+		} else {
+			regmap_update_bits(imx6_pcie->iomuxc_gpr,
+					   imx6_pcie_grp_offset(imx6_pcie),
+					   IMX8MQ_GPR_PCIE_VREG_BYPASS,
+					   1);
+			dev_err(dev, "IMX8MQ_GPR_PCIE_VREG_BYPASS set to 1\n");
 		}
 		break;
 	case IMX7D:
@@ -456,14 +464,9 @@ static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
 	unsigned long phy_rate = clk_get_rate(imx6_pcie->pcie_phy);
 	int mult, div;
 	u16 val;
-/**************/
-    u16 ref_usb2_en;
-    u16 reg;
-    int ret;
-/**************/
 
 	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_IMX6_PHY)) {
-		dev_info(imx6_pcie->pci->dev, "imx6_setup_phy_mpll return IMX6_PCIE_FLAG_IMX6_PHY\n");
+		dev_info(imx6_pcie->pci->dev, "imx6_setup_phy_mpll return because IMX6_PCIE_FLAG_IMX6_PHY\n");
 		return 0;
 	}
 
@@ -471,6 +474,7 @@ static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
 
 	switch (phy_rate) {
 	case 125000000:
+		dev_info(imx6_pcie->pci->dev, "phy rate is 125000000\n");
 		/*
 		 * The default settings of the MPLL are for a 125MHz input
 		 * clock, so no need to reconfigure anything in that case.
@@ -479,98 +483,45 @@ static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
 	case 100000000:
 		mult = 25;
 		div = 0;
+		dev_info(imx6_pcie->pci->dev, "phy rate is 100000000\n");
 		break;
 	case 200000000:
 		mult = 25;
 		div = 1;
+		dev_info(imx6_pcie->pci->dev, "phy rate is 200000000\n");
 		break;
 	default:
 		dev_err(imx6_pcie->pci->dev,
 			"Unsupported PHY reference clock rate %lu\n", phy_rate);
 		return -EINVAL;
 	}
-/**********************/
-    dev_info(imx6_pcie->pci->dev, "overriding PCIe PHY MPLL config: multiplier = %d, clkdiv2 = %d\n",
-        mult, div);
 
-    /* set the MPLL override value to 'disabled' */
-    pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &reg);
-#if 0
-    reg &= ~(0x1 << 1);
-    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
-#endif
-
-    /* enable MPLL override */
-    reg |= (0x1 << 0);
-    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
-
-    /* set the new MPLL multiplier */
-    reg &= ~(0x7F << 2);
-    reg |=  (mult << 2);
-    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
-
-    /* enable multiplier override */
-    reg |= (0x1 << 9);
-    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
-
-    /*
-     * set the div.  when this override is enabled it
-     * overrides both div and ref_usb2_en.  make sure
-     * the overriden ref_usb2_en reflects the original value.
-     */
-    pcie_phy_read(imx6_pcie, PCIE_PHY_ATEOVRD, &reg);
-    ref_usb2_en = (reg >> 3) & 0x1;
-
-    /* set the current value of ref_usb2_en as the override */
-    reg &= ~(0x1 << 1);
-    reg |=  (ref_usb2_en << 1);
-
-    /* set the div override */
-    reg &= ~(0x1 << 0);
-    reg |=  (div << 0);
-
-    pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, reg);
-
-    /* enable the div override */
-    reg |= (0x1 << 2);  /* ateovrd_en */
-    pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, reg);
-
-    /* disable the MPLL override */
-    pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &reg);
-#if 0
-    reg &= ~(0x1 << 0);
-#endif
-    reg |=  (0x1 << 1);
-    pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, reg);
-
-/**********************/
-#if 0 /*original*/
 	pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &val);
 
-	dev_err(imx6_pcie->pci->dev, "initial PCIE_PHY_MPLL_OVRD_IN_LO 0x%x\n", val);
+	dev_info(imx6_pcie->pci->dev, "initial PCIE_PHY_MPLL_OVRD_IN_LO 0x%x\n", val);
 
 	val &= ~(PCIE_PHY_MPLL_MULTIPLIER_MASK <<
 		 PCIE_PHY_MPLL_MULTIPLIER_SHIFT);
 	val |= mult << PCIE_PHY_MPLL_MULTIPLIER_SHIFT;
 	val |= PCIE_PHY_MPLL_MULTIPLIER_OVRD;
 
-	dev_err(imx6_pcie->pci->dev, "wrote back PCIE_PHY_MPLL_OVRD_IN_LO 0x%x\n", val);
+	dev_info(imx6_pcie->pci->dev, "wrote back PCIE_PHY_MPLL_OVRD_IN_LO 0x%x\n", val);
 
 	pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, val);
 
 	pcie_phy_read(imx6_pcie, PCIE_PHY_ATEOVRD, &val);
 
-	dev_err(imx6_pcie->pci->dev, "initial PCIE_PHY_ATEOVRD 0x%x\n", val);
+	dev_info(imx6_pcie->pci->dev, "initial PCIE_PHY_ATEOVRD 0x%x\n", val);
 
 	val &= ~(PCIE_PHY_ATEOVRD_REF_CLKDIV_MASK <<
 		 PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT);
 	val |= div << PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT;
 	val |= PCIE_PHY_ATEOVRD_EN;
 
-	dev_err(imx6_pcie->pci->dev, "wrote back PCIE_PHY_ATEOVRD 0x%x\n", val);
+	dev_info(imx6_pcie->pci->dev, "wrote back PCIE_PHY_ATEOVRD 0x%x\n", val);
 
 	pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, val);
-#endif
+
 	return 0;
 }
 
@@ -1908,9 +1859,6 @@ static const struct imx6_pcie_drvdata drvdata[] = {
 	},
 	[IMX8MQ] = {
 		.variant = IMX8MQ,
-		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
-			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
-			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
 		.gpr = "fsl,imx8mq-iomuxc-gpr",
 	},
 	[IMX8MQ_EP] = {
